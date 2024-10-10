@@ -1,0 +1,16 @@
+# dune exec bin/main.exe
+# OCAMLPARAM: unset
+# Shared cache: disabled
+# Shared cache location: /home/rv/.cache/dune/db
+# Workspace root: /home/rv/final_project
+# Auto-detected concurrency: 24
+# Dune context:
+#  { name = "default"
+#  ; kind = "default"
+#  ; profile = Dev
+#  ; merlin = true
+#  ; fdo_target_exe = None
+#  ; build_dir = In_build_dir "default"
+#  ; instrument_with = []
+#  }
+$ /home/rv/.opam/cs3110-2024fa/bin/ocamlc.opt -config > /tmp/dune_c01525_output
