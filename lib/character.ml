@@ -1,1 +1,4 @@
-let test = 1
+type char = {
+  hp : int;
+  energy : int;
+}
