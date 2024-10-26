@@ -1,11 +1,9 @@
-(* simple_window.ml *)
-
 (* Open the Graphics module *)
 open Graphics
 
 let () =
   (* Initialize the graphics system *)
-  open_graph " 640x480";
+  let () = open_graph " 640x480" in
 
   (* Create a window of size 640x480 *)
 
