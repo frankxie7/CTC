@@ -1,4 +1,4 @@
 (executable
  (public_name final_project)
  (name main)
- (libraries lablgtk3 final_project))
+ (libraries graphics final_project))
