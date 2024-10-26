@@ -1,4 +1,8 @@
-# dune build
+<<<<<<< HEAD
+# dune test
+=======
+# dune exec bin/main.exe
+>>>>>>> refs/remotes/origin/main
 # OCAMLPARAM: unset
 # Shared cache: disabled
 # Shared cache location: /home/frankxie7/.cache/dune/db
@@ -13,4 +17,18 @@
 #  ; build_dir = In_build_dir "default"
 #  ; instrument_with = []
 #  }
+<<<<<<< HEAD
 $ /home/frankxie7/.opam/cs3110-2024fa/bin/ocamlc.opt -config > /tmp/dune_79530a_output
+=======
+<<<<<<< HEAD
+$ /home/rv/.opam/cs3110-2024fa/bin/ocamlc.opt -config > /tmp/dune_4ca4ce_output
+$ (cd _build/default/test && ./test_final_project.exe)
+> .
+> Ran: 1 tests in: 0.10 seconds.
+> OK
+=======
+
+$ /Users/alexjankowich/.opam/cs3110-2024fa/bin/ocamlc.opt -config > /var/folders/db/x8cwmmd57r7c7h8fyb8dxshw0000gn/T/dune_b04802_output
+$ 
+>>>>>>> refs/remotes/origin/main
+>>>>>>> refs/remotes/origin/main

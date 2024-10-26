@@ -1,4 +1,8 @@
 (executable
  (public_name final_project)
  (name main)
+<<<<<<< HEAD
  (libraries final_project graphics))
+=======
+ (libraries lablgtk3 final_project))
+>>>>>>> refs/remotes/origin/main
