@@ -1,4 +1,4 @@
-type char = {
+type t = {
   hp : int;
   energy : int;
 }
