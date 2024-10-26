@@ -1,1 +1,1 @@
-let () = print_endline "Hello, World! word"
+let () = print_endline "Starting main function..."
