@@ -1,83 +1,129 @@
 (* Open the Graphics module *)
 open Graphics
 
+(* Main program execution *)
 let () =
-  let () = open_graph " 640x480" in
+  open_graph " 640x480";
   let background_color = rgb 208 181 154 in
   set_color background_color;
   fill_rect 0 0 (size_x ()) (size_y ());
 
+  let current_hp = 80 in
+  let scale = 1.0 in
   let light_brown = rgb 181 101 29 in
   set_color light_brown;
-  let camel_center_x = 150 in
-  let camel_center_y = 175 in
-  fill_ellipse camel_center_x camel_center_y 50 27;
+
+  let center_x = 200 in
+  let center_y = 200 in
+
+  let body_width = int_of_float (50.0 *. scale) in
+  let body_height = int_of_float (27.0 *. scale) in
+  let hump_width = int_of_float (22.0 *. scale) in
+  let hump_height = int_of_float (25.0 *. scale) in
+  let neck_radius = int_of_float (20.0 *. scale) in
+  let neck_height = int_of_float (30.0 *. scale) in
+  let leg_offset = int_of_float (15.0 *. scale) in
+  let hind_leg_offset_x = int_of_float (-60.0 *. scale) in
+  let hind_leg_offset_y = int_of_float (-8.0 *. scale) in
+  let hp_box_height = int_of_float (15.0 *. scale) in
+  let hp_bar_height = int_of_float (11.0 *. scale) in
+
+  fill_ellipse center_x center_y body_width body_height;
+
   (* Camel body *)
-  fill_ellipse camel_center_x (camel_center_y + 10) 22 25;
+  let hump_x = center_x in
+  let hump_y = center_y + int_of_float (13.0 *. scale) in
+  fill_ellipse hump_x hump_y hump_width hump_height;
+
   (* Camel hump *)
-  set_line_width 19;
-  draw_arc (camel_center_x + 60) (camel_center_y + 15) 20 30 225 360;
-  (* Camel neck *)
-  fill_ellipse (camel_center_x + 84) (camel_center_y + 27) 12 10;
-  let head_center_x = 224 in
-  let head_center_y = 211 in
-  fill_poly
-    [|
-      (head_center_x, head_center_y);
-      (head_center_x + 40, head_center_y - 4);
-      (head_center_x + 40, head_center_y - 16);
-      (head_center_x, head_center_y - 24);
-    |];
+  set_line_width (int_of_float (19.0 *. scale));
+  let neck_x = center_x + int_of_float (60.0 *. scale) in
+  let neck_y = center_y + int_of_float (15.0 *. scale) in
+  draw_arc neck_x neck_y neck_radius neck_height 225 360;
+
   (* Camel head *)
-  let leg_center_one_x = camel_center_x + 25 in
-  let leg_center_one_y = camel_center_y - 15 in
-
+  let face_x = center_x + int_of_float (74.0 *. scale) in
+  let face_y = center_y + int_of_float (37.0 *. scale) in
+  let face_offset_x = int_of_float (37.5 *. scale) in
+  let face_offset_y = int_of_float (24.0 *. scale) in
+  let face_drop_small = int_of_float (12.5 *. scale) in
+  let face_drop_large = int_of_float (5.0 *. scale) in
   fill_poly
     [|
-      (leg_center_one_x, leg_center_one_y);
-      (leg_center_one_x + 13, leg_center_one_y);
-      (leg_center_one_x + 5, leg_center_one_y - 35);
-      (leg_center_one_x + 3, leg_center_one_y - 73);
-      (leg_center_one_x + 8, leg_center_one_y - 77);
-      (leg_center_one_x - 6, leg_center_one_y - 77);
-      (leg_center_one_x - 5, leg_center_one_y - 73);
-      (leg_center_one_x - 4, leg_center_one_y - 35);
+      (face_x, face_y - face_drop_small);
+      (face_x + (face_offset_x / 2), face_y - (face_drop_small / 2));
+      (face_x + face_offset_x, face_y - face_drop_small);
+      (face_x + face_offset_x, face_y - face_offset_y);
+      (face_x, face_y - face_offset_y - face_drop_large);
     |];
 
-  let leg_center_two_x = camel_center_x - 60 in
-  let leg_center_two_y = camel_center_y - 8 in
+  (* Camel foreleg *)
+  let foreleg_x = center_x + int_of_float (25.0 *. scale) in
+  let foreleg_y = center_y - leg_offset in
   fill_poly
     [|
-      (leg_center_two_x, leg_center_two_y);
-      (leg_center_two_x + 25, leg_center_two_y + 24);
-      (leg_center_two_x + 12, leg_center_two_y - 40);
-      (leg_center_two_x + 14, leg_center_two_y - 53);
-      (leg_center_two_x + 18, leg_center_two_y - 80);
-      (leg_center_two_x + 22, leg_center_two_y - 85);
-      (leg_center_two_x + 13, leg_center_two_y - 85);
-      (leg_center_two_x + 2, leg_center_two_y - 45);
-      (leg_center_two_x - 1, leg_center_two_y - 20);
-      (leg_center_two_x, leg_center_two_y - 15);
+      (foreleg_x, foreleg_y);
+      (foreleg_x + int_of_float (13.0 *. scale), foreleg_y);
+      ( foreleg_x + int_of_float (5.0 *. scale),
+        foreleg_y - int_of_float (35.0 *. scale) );
+      ( foreleg_x + int_of_float (3.0 *. scale),
+        foreleg_y - int_of_float (73.0 *. scale) );
+      ( foreleg_x + int_of_float (8.0 *. scale),
+        foreleg_y - int_of_float (77.0 *. scale) );
+      ( foreleg_x - int_of_float (6.0 *. scale),
+        foreleg_y - int_of_float (77.0 *. scale) );
+      ( foreleg_x - int_of_float (5.0 *. scale),
+        foreleg_y - int_of_float (73.0 *. scale) );
+      ( foreleg_x - int_of_float (4.0 *. scale),
+        foreleg_y - int_of_float (35.0 *. scale) );
+    |];
+
+  (* Camel hindleg *)
+  let hindleg_x = center_x + hind_leg_offset_x in
+  let hindleg_y = center_y + hind_leg_offset_y in
+  fill_poly
+    [|
+      (hindleg_x, hindleg_y);
+      ( hindleg_x + int_of_float (25.0 *. scale),
+        hindleg_y + int_of_float (24.0 *. scale) );
+      ( hindleg_x + int_of_float (12.0 *. scale),
+        hindleg_y - int_of_float (40.0 *. scale) );
+      ( hindleg_x + int_of_float (14.0 *. scale),
+        hindleg_y - int_of_float (53.0 *. scale) );
+      ( hindleg_x + int_of_float (18.0 *. scale),
+        hindleg_y - int_of_float (80.0 *. scale) );
+      ( hindleg_x + int_of_float (22.0 *. scale),
+        hindleg_y - int_of_float (85.0 *. scale) );
+      ( hindleg_x + int_of_float (13.0 *. scale),
+        hindleg_y - int_of_float (85.0 *. scale) );
+      ( hindleg_x + int_of_float (2.0 *. scale),
+        hindleg_y - int_of_float (45.0 *. scale) );
+      ( hindleg_x - int_of_float (1.0 *. scale),
+        hindleg_y - int_of_float (20.0 *. scale) );
+      (hindleg_x, hindleg_y - int_of_float (15.0 *. scale));
     |];
 
   set_color white;
-  fill_rect 95 235 150 15;
+  fill_rect
+    (center_x - int_of_float (65.0 *. scale))
+    (center_y + int_of_float (60.0 *. scale))
+    (int_of_float (151.0 *. scale))
+    hp_box_height;
+
   set_color black;
-  moveto 100 252;
-  let hp = 80 in
-  draw_string ("HP: " ^ string_of_int hp ^ "/80");
+  moveto
+    (center_x - int_of_float (50.0 *. scale))
+    (center_y + int_of_float (77.0 *. scale));
+  draw_string ("HP: " ^ string_of_int current_hp ^ "/80");
+
   set_color red;
-  fill_rect 98 237 140 11;
+  let display_hp =
+    int_of_float (145.0 *. scale /. 80.0 *. float_of_int current_hp)
+  in
+  fill_rect
+    (center_x - int_of_float (62.0 *. scale))
+    (center_y + int_of_float (62.0 *. scale))
+    display_hp hp_bar_height;
 
-  (* Set the background color *)
-  (* set_window_title "Simple Window"; set_color black; fill_rect 0 0 (size_x
-     ()) (size_y ());
-
-     (* Fill the window with black color *)
-
-     (* Draw some text *) set_color white; moveto ((size_x () / 2) - 50) (size_y
-     () / 2); (* Center the text *) draw_string "Hello, OCaml Graphics!"; *)
-
-  (* Wait for a mouse click before closing *)
   let _ = read_key () in
-  close_graph () (* Close the window *)
+  close_graph ()
