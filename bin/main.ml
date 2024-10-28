@@ -8,17 +8,19 @@ let () =
   (* Create a window of size 640x480 *)
 
   (* Set the background color *)
-  set_window_title "Simple Window";
+  set_window_title "Game Prototype";
   set_color black;
   fill_rect 0 0 (size_x ()) (size_y ());
+  set_color blue;
+  draw_circle 160 (size_y () / 2) 50;
 
   (* Fill the window with black color *)
 
   (* Draw some text *)
   set_color white;
-  moveto ((size_x () / 2) - 50) (size_y () / 2);
+  moveto ((size_x () / 2) - 50) (size_y ());
   (* Center the text *)
-  draw_string "Hello, OCaml Graphics!";
+  draw_string "Prototype Battle";
 
   (* Wait for a mouse click before closing *)
   let _ = read_key () in
