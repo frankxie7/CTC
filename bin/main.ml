@@ -1,4 +1,3 @@
-(* Open the Graphics module *)
 open Graphics
 
 let make_hp_bar x y max_health curr_health scale =
@@ -113,11 +112,55 @@ let make_camel x y scale =
       (hindleg_x, hindleg_y - int_of_float (15.0 *. scale));
     |]
 
+let camel1A_deck =
+  [
+    Final_project.Card.basicA;
+    Final_project.Card.basicA;
+    Final_project.Card.basicA;
+    Final_project.Card.basicA;
+    Final_project.Card.basicD;
+    Final_project.Card.basicD;
+    Final_project.Card.basicD;
+    Final_project.Card.basicD;
+    Final_project.Card.basicAD;
+  ]
+
+let camel1A_hand =
+  [
+    Final_project.Card.basicA;
+    Final_project.Card.basicA;
+    Final_project.Card.basicD;
+    Final_project.Card.basicD;
+    Final_project.Card.basicAD;
+  ]
+
+let hyena_moves =
+  [
+    Final_project.Enemy.create_move 6 0 "None";
+    Final_project.Enemy.create_move 6 0 "None";
+  ]
+
+(**[draw_one] takes in a hand and deck and appends the first element of deck
+   onto the top of the hand. It returns a tuple of the updated hand and updated
+   deck*)
+let draw_one hand deck =
+  let new_hand = Final_project.Deck.push (Final_project.Deck.peek deck) hand in
+  (new_hand, Final_project.Deck.pop deck)
+
+(**[play_card] takes in a hand and returns a tuple of the top card and the
+   updated hand.*)
+let play_card hand =
+  let top_card = Final_project.Deck.peek hand in
+  (top_card, Final_project.Deck.pop hand)
+
 let make_hyena x y =
   set_color black;
   let cpu_x = 400 in
   let cpu_y = 200 in
   fill_rect cpu_x cpu_y 10 10
+
+let rec game player hyena player_hand player_deck =
+  print_endline "Choose a card "
 
 let () =
   open_graph " 640x480";
@@ -139,6 +182,19 @@ let () =
   make_hyena cpu_x cpu_y;
   make_hp_bar camel_x camel_y camel_curr_hp camel_max_hp scale;
   make_hp_bar cpu_x cpu_y cpu_max_hp cpu_curr_hp scale;
+
+  let camel = Final_project.Character.create_camel 80 3 "" in
+  let hyena = Final_project.Enemy.create_enemy 20 hyena_moves in
+  let deck =
+    Final_project.Deck.empty
+    |> List.fold_right Final_project.Deck.push camel1A_deck
+  in
+  (* TODO - randomization function of Deck *)
+  let hand =
+    Final_project.Deck.empty
+    |> List.fold_right Final_project.Deck.push camel1A_hand
+  in
+  game camel hyena hand deck;
 
   let _ = read_key () in
   close_graph ()
