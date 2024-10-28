@@ -153,14 +153,34 @@ let play_card hand =
   let top_card = Final_project.Deck.peek hand in
   (top_card, Final_project.Deck.pop hand)
 
+(**[make_hyena] makes a hyena GUI centered at x y.*)
 let make_hyena x y =
   set_color black;
   let cpu_x = 400 in
   let cpu_y = 200 in
   fill_rect cpu_x cpu_y 10 10
 
+(**[check_condition] checks if the user input is an int, and checks if it
+   non-negative and less than the total hand.size*)
+let check_conditions input hand =
+  try
+    let intput = int_of_string input in
+
+    if intput > Final_project.Deck.size hand && intput >= 0 then
+      failwith "Uh oh! Index out of bound"
+    else input
+  with Sys_error msg ->
+    Printf.printf "Error: %s\n" msg;
+    input
+
 let rec game player hyena player_hand player_deck =
-  print_endline "Choose a card "
+  let hand_deck_tuple = draw_one player_hand player_deck in
+  let hand = fst hand_deck_tuple in
+  (* let deck = snd hand_deck_tuple in *)
+  print_endline "Play a card: ";
+  let input = read_line () in
+  print_endline (check_conditions input hand)
+(* game player hyena hand deck *)
 
 let () =
   open_graph " 640x480";
@@ -171,7 +191,7 @@ let () =
   let camel_max_hp = 80 in
   let camel_curr_hp = 80 in
   let cpu_max_hp = 40 in
-  let cpu_curr_hp = 20 in
+  let cpu_curr_hp = 40 in
   let scale = 1.0 in
   let camel_x = 200 in
   let camel_y = 200 in
