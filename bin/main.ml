@@ -1,6 +1,7 @@
 (* Open the Graphics module *)
 open Graphics
 
+<<<<<<< HEAD
 let make_hp_bar x y max_health curr_health scale =
   let hp_box_height = int_of_float (15.0 *. scale) in
   let hp_bar_height = int_of_float (11.0 *. scale) in
@@ -10,6 +11,22 @@ let make_hp_bar x y max_health curr_health scale =
     (y + int_of_float (60.0 *. scale))
     (int_of_float (151.0 *. scale))
     hp_box_height;
+=======
+(* Main program execution *)
+let () =
+  (* Initialize the graphics system *)
+
+  (* Create a window of size 640x480 *)
+
+  (* Set the background color *)
+  open_graph " 640x480";
+  let background_color = rgb 208 181 154 in
+  set_color background_color;
+
+  fill_rect 0 0 (size_x ()) (size_y ());
+  set_color blue;
+  draw_circle 160 (size_y () / 2) 50;
+>>>>>>> 3f37aa4d00a4c5fa44dabf2d72b2a51c9f456217
 
   set_color red;
   let hp_width =
@@ -111,7 +128,23 @@ let make_camel x y scale =
       ( hindleg_x - int_of_float (1.0 *. scale),
         hindleg_y - int_of_float (20.0 *. scale) );
       (hindleg_x, hindleg_y - int_of_float (15.0 *. scale));
+<<<<<<< HEAD
     |]
+=======
+    |];
+
+  set_color white;
+
+  moveto ((size_x () / 2) - 50) (size_y ());
+  (* Center the text *)
+  draw_string "Prototype Battle";
+
+  fill_rect
+    (center_x - int_of_float (65.0 *. scale))
+    (center_y + int_of_float (60.0 *. scale))
+    (int_of_float (151.0 *. scale))
+    hp_box_height;
+>>>>>>> 3f37aa4d00a4c5fa44dabf2d72b2a51c9f456217
 
 let make_hyena x y =
   set_color black;
