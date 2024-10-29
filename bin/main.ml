@@ -182,6 +182,7 @@ let rec game (player : Final_project.Character.t)
     let hand_deck_tuple = draw_one player_hand player_deck in
     let hand = fst hand_deck_tuple in
     (* let deck = snd hand_deck_tuple in *)
+    Final_project.Deck.print (Final_project.Deck.to_list player_hand);
     print_endline "Play a card (type index) or End to end turn: ";
     let input = read_line () in
     let affects =
@@ -192,7 +193,11 @@ let rec game (player : Final_project.Character.t)
     in
     match affects with
     | c, d, def, cost ->
-        make_hp_bar 400 200 (hyena.hp - d) 20 1.0;
+        let _ = clear_graph in
+        make_hyena 400 200;
+        make_camel 200 200 1.0;
+        make_hp_bar 400 200 20 (hyena.hp - d) 1.0;
+        make_hp_bar 200 200 80 80 1.0;
         game player
           (Final_project.Enemy.create_enemy (hyena.hp - d) hyena_moves)
           player_hand player_deck
