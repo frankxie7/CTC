@@ -1,21 +1,5 @@
 open Graphics
 
-(* Main program execution *)
-let () =
-  (* Initialize the graphics system *)
-
-  (* Create a window of size 640x480 *)
-
-  (* Set the background color *)
-  open_graph " 640x480";
-  let background_color = rgb 208 181 154 in
-  set_color background_color;
-
-  fill_rect 0 0 (size_x ()) (size_y ());
-  set_color blue;
-
-let current_hp = 80 in
-let scale = 1.0 in
 let make_hp_bar x y max_health curr_health scale =
   let hp_box_height = int_of_float (15.0 *. scale) in
   let hp_bar_height = int_of_float (11.0 *. scale) in
@@ -190,14 +174,28 @@ let check_conditions input hand =
       check this*)
     input
 
-let rec game player hyena player_hand player_deck =
-  let hand_deck_tuple = draw_one player_hand player_deck in
-  let hand = fst hand_deck_tuple in
-  (* let deck = snd hand_deck_tuple in *)
-  print_endline "Play a card: ";
-  let input = read_line () in
-  print_endline (check_conditions input hand)
-(* game player hyena hand deck *)
+let rec game (player : Final_project.Character.t)
+    (hyena : Final_project.Enemy.t)
+    (player_hand : Final_project.Card.t Final_project.Deck.t) player_deck =
+  if hyena.hp = 0 then print_endline "end"
+  else
+    let hand_deck_tuple = draw_one player_hand player_deck in
+    let hand = fst hand_deck_tuple in
+    (* let deck = snd hand_deck_tuple in *)
+    print_endline "Play a card (type index) or End to end turn: ";
+    let input = read_line () in
+    let affects =
+      ( (Final_project.Deck.get (int_of_string input) hand).cost,
+        (Final_project.Deck.get (int_of_string input) hand).dmg,
+        (Final_project.Deck.get (int_of_string input) hand).defend,
+        (Final_project.Deck.get (int_of_string input) hand).effect )
+    in
+    match affects with
+    | c, d, def, cost ->
+        make_hp_bar 400 200 (hyena.hp - d) 20 1.0;
+        game player
+          (Final_project.Enemy.create_enemy (hyena.hp - d) hyena_moves)
+          player_hand player_deck
 
 let () =
   open_graph " 640x480";
