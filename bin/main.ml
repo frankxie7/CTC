@@ -1,5 +1,21 @@
 open Graphics
 
+(* Main program execution *)
+let () =
+  (* Initialize the graphics system *)
+
+  (* Create a window of size 640x480 *)
+
+  (* Set the background color *)
+  open_graph " 640x480";
+  let background_color = rgb 208 181 154 in
+  set_color background_color;
+
+  fill_rect 0 0 (size_x ()) (size_y ());
+  set_color blue;
+
+let current_hp = 80 in
+let scale = 1.0 in
 let make_hp_bar x y max_health curr_health scale =
   let hp_box_height = int_of_float (15.0 *. scale) in
   let hp_bar_height = int_of_float (11.0 *. scale) in
