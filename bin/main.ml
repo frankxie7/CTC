@@ -1,21 +1,5 @@
 open Graphics
 
-(* Main program execution *)
-let () =
-  (* Initialize the graphics system *)
-
-  (* Create a window of size 640x480 *)
-
-  (* Set the background color *)
-  open_graph " 640x480";
-  let background_color = rgb 208 181 154 in
-  set_color background_color;
-
-  fill_rect 0 0 (size_x ()) (size_y ());
-  set_color blue;
-
-let current_hp = 80 in
-let scale = 1.0 in
 let make_hp_bar x y max_health curr_health scale =
   let hp_box_height = int_of_float (15.0 *. scale) in
   let hp_bar_height = int_of_float (11.0 *. scale) in
@@ -194,6 +178,7 @@ let rec game player hyena player_hand player_deck =
   let hand_deck_tuple = draw_one player_hand player_deck in
   let hand = fst hand_deck_tuple in
   (* let deck = snd hand_deck_tuple in *)
+  Final_project.Deck.print (Final_project.Deck.to_list player_hand);
   print_endline "Play a card: ";
   let input = read_line () in
   print_endline (check_conditions input hand)

@@ -23,3 +23,5 @@ val size : 'a t -> int
 val to_list : 'a t -> 'a list
 (**[to_list d] is the deck in list representation*)
 
+val print : Card.t list -> unit
+(**[print d] prints the deck representation for list.*)
