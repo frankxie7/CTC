@@ -192,7 +192,9 @@ let rec game (player : Final_project.Character.t)
     in
     match affects with
     | c, d, def, cost ->
-        let _ = clear_graph in
+        clear_graph ();
+        set_color (rgb 208 181 154);
+        fill_rect 0 0 (size_x ()) (size_y ());
         make_hyena 400 200;
         make_camel 200 200 1.0;
         make_hp_bar 400 200 20 (hyena.hp - d) 1.0;

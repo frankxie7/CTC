@@ -25,7 +25,7 @@ let to_list = Fun.id
 
 let rec get (n : int) = function
   | [] -> raise Empty
-  | t :: s -> if n = 1 then t else get (n - 1) s
+  | t :: s -> if n = 0 then t else get (n - 1) s
 
 let rec remove (n : int) = function
   | [] -> raise Empty
