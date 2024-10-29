@@ -1,3 +1,5 @@
+open Card
+
 type 'a t = 'a list
 
 exception Empty
@@ -20,3 +22,10 @@ let pop = function
 
 let size = List.length
 let to_list = Fun.id
+
+let print (deck_lst : Card.t list) =
+  List.iteri
+    (fun i x ->
+      Printf.printf "%d -> " (i + 1);
+      Card.print_card x)
+    deck_lst

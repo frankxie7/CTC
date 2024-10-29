@@ -9,3 +9,5 @@ val basicD : t
 
 val basicAD : t
 (**[basicAD] is a basic attack and defend card*)
+
+val print_card : t -> unit
