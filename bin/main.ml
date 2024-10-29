@@ -182,6 +182,7 @@ let rec game (player : Final_project.Character.t)
     let hand_deck_tuple = draw_one player_hand player_deck in
     let hand = fst hand_deck_tuple in
     (* let deck = snd hand_deck_tuple in *)
+    Final_project.Deck.print (Final_project.Deck.to_list player_hand);
     print_endline "Play a card (type index) or End to end turn: ";
     let input = read_line () in
     let affects =

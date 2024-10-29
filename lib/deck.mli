@@ -23,7 +23,6 @@ val size : 'a t -> int
 val to_list : 'a t -> 'a list
 (**[to_list d] is the deck in list representation*)
 
-<<<<<<< HEAD
 val get : int -> 'a t -> 'a
 (**[get n d] is the card of d at position n. Raises Empty if n > [size d] + 1*)
 
@@ -31,7 +30,5 @@ val remove : int -> 'a t -> 'a t
 (**[remove n d] removes the card from given position and gives the deck 
 without the element. Raises Empty if n > [size d] + 1*)
 
-=======
 val print : Card.t list -> unit
 (**[print d] prints the deck representation for list.*)
->>>>>>> f52050ed20f1f5b830a8cab2e8cd4634af739c6c
