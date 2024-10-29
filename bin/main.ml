@@ -231,5 +231,5 @@ let () =
   in
   game camel hyena hand deck;
 
-  let _ = read_key () in
+  let _ = read_line () in
   close_graph ()

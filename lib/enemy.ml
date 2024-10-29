@@ -12,5 +12,4 @@ type t = {
 let create_move (dmg : int) (def : int) (eff : string) : m =
   { damage = dmg; defend = def; effect = eff }
 
-(* let enemy1 = { hp = 20; moves = [ basicD; basicA ] } *)
 let create_enemy h m : t = { hp = h; moves = m }
