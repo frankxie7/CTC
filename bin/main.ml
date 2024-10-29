@@ -165,12 +165,13 @@ let make_hyena x y =
 let check_conditions input hand =
   try
     let intput = int_of_string input in
-
     if intput > Final_project.Deck.size hand && intput >= 0 then
       failwith "Uh oh! Index out of bound"
     else input
   with Sys_error msg ->
     Printf.printf "Error: %s\n" msg;
+    (*idk what to do with input so it just returns it but we prolly have to
+      check this*)
     input
 
 let rec game player hyena player_hand player_deck =
