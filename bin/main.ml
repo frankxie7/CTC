@@ -180,6 +180,10 @@ let rec game player hyena player_hand player_deck =
   print_endline "Play a card: ";
   let input = read_line () in
   print_endline (check_conditions input hand)
+(* let input = read_line () in check_conditions input hand in let p_attack =
+   (player_hand.get input).get_dmg in let current_health = player.hp -
+   p_attack *)
+
 (* game player hyena hand deck *)
 
 let () =
@@ -216,5 +220,5 @@ let () =
   in
   game camel hyena hand deck;
 
-  let _ = read_key () in
+  let _ = read_line () in
   close_graph ()
