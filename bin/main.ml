@@ -193,7 +193,11 @@ let rec game (player : Final_project.Character.t)
     in
     match affects with
     | c, d, def, cost ->
-        make_hp_bar 400 200 (hyena.hp - d) 20 1.0;
+        let _ = clear_graph in
+        make_hyena 400 200;
+        make_camel 200 200 1.0;
+        make_hp_bar 400 200 20 (hyena.hp - d) 1.0;
+        make_hp_bar 200 200 80 80 1.0;
         game player
           (Final_project.Enemy.create_enemy (hyena.hp - d) hyena_moves)
           player_hand player_deck
