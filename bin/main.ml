@@ -14,7 +14,6 @@ let () =
 
   fill_rect 0 0 (size_x ()) (size_y ());
   set_color blue;
-  draw_circle 160 (size_y () / 2) 50;
 
   let current_hp = 80 in
   let scale = 1.0 in
