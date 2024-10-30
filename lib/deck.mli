@@ -32,4 +32,3 @@ without the element. Raises Empty if n > [size d] + 1*)
 
 val print : Card.t list -> unit
 (**[print d] prints the deck representation for list.*)
-
