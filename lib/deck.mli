@@ -31,9 +31,7 @@ val remove : int -> 'a t -> 'a t
 without the element. Raises Empty if n > [size d] + 1*)
 
 val print : Card.t list -> unit
-<<<<<<< HEAD
 (**[print d] prints the deck representation for list.*)
 
-=======
-(**[print d] prints the deck representation for list.*)
->>>>>>> refs/remotes/origin/main
+
+
