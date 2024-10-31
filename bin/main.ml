@@ -1,28 +1,31 @@
 open Graphics
+(**[pos ch] handles when current health is less than 0. If it is negative then it equals 0, if it isn't then it returns itself.*)
+let pos ch = 
+  if ch < 0 then 0 else ch
 
 let make_hp_bar x y max_health curr_health scale =
-  let hp_box_height = int_of_float (15.0 *. scale) in
-  let hp_bar_height = int_of_float (11.0 *. scale) in
-  set_color white;
-  fill_rect
-    (x - int_of_float (65.0 *. scale))
-    (y + int_of_float (60.0 *. scale))
-    (int_of_float (151.0 *. scale))
-    hp_box_height;
+    let hp_box_height = int_of_float (15.0 *. scale) in
+    let hp_bar_height = int_of_float (11.0 *. scale) in
+    set_color white;
+    fill_rect
+      (x - int_of_float (65.0 *. scale))
+      (y + int_of_float (60.0 *. scale))
+      (int_of_float (151.0 *. scale))
+      hp_box_height;
 
-  set_color red;
-  let hp_width =
-    int_of_float
-      (145.0 *. scale *. float_of_int curr_health /. float_of_int max_health)
-  in
-  fill_rect
-    (x - int_of_float (62.0 *. scale))
-    (y + int_of_float (62.0 *. scale))
-    hp_width hp_bar_height;
-  set_color black;
-  moveto (x - int_of_float (50.0 *. scale)) (y + int_of_float (77.0 *. scale));
-  draw_string
-    ("HP: " ^ string_of_int curr_health ^ "/" ^ string_of_int max_health)
+    set_color red;
+    let hp_width =
+      int_of_float
+        (145.0 *. scale *. float_of_int (pos curr_health) /. float_of_int max_health)
+    in
+    fill_rect
+      (x - int_of_float (62.0 *. scale))
+      (y + int_of_float (62.0 *. scale))
+      hp_width hp_bar_height;
+    set_color black;
+    moveto (x - int_of_float (50.0 *. scale)) (y + int_of_float (77.0 *. scale));
+    draw_string
+      ("HP: " ^ string_of_int (pos curr_health) ^ "/" ^ string_of_int max_health)
 
 let make_camel x y scale =
   let light_brown = rgb 181 101 29 in
@@ -129,8 +132,7 @@ let camel1A_hand =
   [
     Final_project.Card.basicA;
     Final_project.Card.basicA;
-    Final_project.Card.basicD;
-    Final_project.Card.basicD;
+    (* Final_project.Card.basicD; Final_project.Card.basicD; *)
     Final_project.Card.basicAD;
   ]
 
@@ -177,7 +179,7 @@ let check_conditions input hand =
 let rec game (player : Final_project.Character.t)
     (hyena : Final_project.Enemy.t)
     (player_hand : Final_project.Card.t Final_project.Deck.t) player_deck =
-  if hyena.hp = 0 then print_endline "end"
+  if hyena.hp <= 0 then print_endline "Game Over"
   else
     let hand_deck_tuple = draw_one player_hand player_deck in
     let hand = fst hand_deck_tuple in
