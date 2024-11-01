@@ -1,31 +1,34 @@
 open Graphics
-(**[pos ch] handles when current health is less than 0. If it is negative then it equals 0, if it isn't then it returns itself.*)
-let pos ch = 
-  if ch < 0 then 0 else ch
+
+(**[pos ch] handles when current health is less than 0. If it is negative then
+   it equals 0, if it isn't then it returns itself.*)
+let pos ch = if ch < 0 then 0 else ch
 
 let make_hp_bar x y max_health curr_health scale =
-    let hp_box_height = int_of_float (15.0 *. scale) in
-    let hp_bar_height = int_of_float (11.0 *. scale) in
-    set_color white;
-    fill_rect
-      (x - int_of_float (65.0 *. scale))
-      (y + int_of_float (60.0 *. scale))
-      (int_of_float (151.0 *. scale))
-      hp_box_height;
+  let hp_box_height = int_of_float (15.0 *. scale) in
+  let hp_bar_height = int_of_float (11.0 *. scale) in
+  set_color white;
+  fill_rect
+    (x - int_of_float (65.0 *. scale))
+    (y + int_of_float (60.0 *. scale))
+    (int_of_float (151.0 *. scale))
+    hp_box_height;
 
-    set_color red;
-    let hp_width =
-      int_of_float
-        (145.0 *. scale *. float_of_int (pos curr_health) /. float_of_int max_health)
-    in
-    fill_rect
-      (x - int_of_float (62.0 *. scale))
-      (y + int_of_float (62.0 *. scale))
-      hp_width hp_bar_height;
-    set_color black;
-    moveto (x - int_of_float (50.0 *. scale)) (y + int_of_float (77.0 *. scale));
-    draw_string
-      ("HP: " ^ string_of_int (pos curr_health) ^ "/" ^ string_of_int max_health)
+  set_color red;
+  let hp_width =
+    int_of_float
+      (145.0 *. scale
+      *. float_of_int (pos curr_health)
+      /. float_of_int max_health)
+  in
+  fill_rect
+    (x - int_of_float (62.0 *. scale))
+    (y + int_of_float (62.0 *. scale))
+    hp_width hp_bar_height;
+  set_color black;
+  moveto (x - int_of_float (50.0 *. scale)) (y + int_of_float (77.0 *. scale));
+  draw_string
+    ("HP: " ^ string_of_int (pos curr_health) ^ "/" ^ string_of_int max_health)
 
 let make_camel x y scale =
   let light_brown = rgb 181 101 29 in
@@ -193,6 +196,11 @@ let rec game (player : Final_project.Character.t)
         (Final_project.Deck.get (int_of_string input) hand).defend,
         (Final_project.Deck.get (int_of_string input) hand).effect )
     in
+    let enemy_attack =
+      match hyena.moves with
+      | [] -> raise (Failure "?")
+      | h :: t -> h
+    in
     match affects with
     | c, d, def, cost ->
         clear_graph ();
@@ -201,9 +209,13 @@ let rec game (player : Final_project.Character.t)
         make_hyena 400 200;
         make_camel 200 200 1.0;
         make_hp_bar 400 200 20 (hyena.hp - d) 1.0;
-        make_hp_bar 200 200 80 80 1.0;
+
+        make_hp_bar 200 200 80
+          (if def - enemy_attack.damage > 0 then player.hp
+           else player.hp + (def - enemy_attack.damage))
+          1.0;
         game player
-          (Final_project.Enemy.create_enemy (hyena.hp - d) hyena_moves)
+          (Final_project.Enemy.create_enemy (hyena.hp - d) hyena.moves)
           player_hand player_deck
 
 let () =
