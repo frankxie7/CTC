@@ -303,10 +303,14 @@ let rec game (player : Final_project.Character.t)
     print_endline "Play a card (type index) or End to end turn: ";
     let input = read_line () in
     let affects =
-      ( (Final_project.Deck.get (int_of_string input) hand).cost,
-        (Final_project.Deck.get (int_of_string input) hand).dmg,
-        (Final_project.Deck.get (int_of_string input) hand).defend,
-        (Final_project.Deck.get (int_of_string input) hand).effect )
+      ( Final_project.Card.get_dmg
+          (Final_project.Deck.get (int_of_string input) hand),
+        Final_project.Card.get_defend
+          (Final_project.Deck.get (int_of_string input) hand),
+        Final_project.Card.get_cost
+          (Final_project.Deck.get (int_of_string input) hand),
+        Final_project.Card.get_effect
+          (Final_project.Deck.get (int_of_string input) hand) )
     in
     let enemy_attack =
       match hyena.moves with
@@ -314,7 +318,7 @@ let rec game (player : Final_project.Character.t)
       | h :: t -> h
     in
     match affects with
-    | c, d, def, cost ->
+    | d, def, cost, eff ->
         clear_graph ();
         set_color (rgb 208 181 154);
         fill_rect 0 0 (size_x ()) (size_y ());
@@ -323,10 +327,19 @@ let rec game (player : Final_project.Character.t)
         make_hp_bar 400 200 20 (hyena.hp - d) 1.0;
 
         make_hp_bar 200 200 80
-          (if def - enemy_attack.damage > 0 then player.hp
-           else player.hp + (def - enemy_attack.damage))
+          (if def - enemy_attack.damage > 0 then
+             Final_project.Character.get_hp player
+           else
+             Final_project.Character.get_hp player + (def - enemy_attack.damage))
           1.0;
-        game player
+        game
+          (Final_project.Character.create_camel
+             (if def - enemy_attack.damage > 0 then
+                Final_project.Character.get_hp player
+              else
+                Final_project.Character.get_hp player
+                + (def - enemy_attack.damage))
+             3 "")
           (Final_project.Enemy.create_enemy (hyena.hp - d) hyena.moves)
           player_hand player_deck
 
