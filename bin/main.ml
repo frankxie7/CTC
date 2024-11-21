@@ -1,31 +1,34 @@
 open Graphics
-(**[pos ch] handles when current health is less than 0. If it is negative then it equals 0, if it isn't then it returns itself.*)
-let pos ch = 
-  if ch < 0 then 0 else ch
+
+(**[pos ch] handles when current health is less than 0. If it is negative then
+   it equals 0, if it isn't then it returns itself.*)
+let pos ch = if ch < 0 then 0 else ch
 
 let make_hp_bar x y max_health curr_health scale =
-    let hp_box_height = int_of_float (15.0 *. scale) in
-    let hp_bar_height = int_of_float (11.0 *. scale) in
-    set_color white;
-    fill_rect
-      (x - int_of_float (65.0 *. scale))
-      (y + int_of_float (60.0 *. scale))
-      (int_of_float (151.0 *. scale))
-      hp_box_height;
+  let hp_box_height = int_of_float (15.0 *. scale) in
+  let hp_bar_height = int_of_float (11.0 *. scale) in
+  set_color white;
+  fill_rect
+    (x - int_of_float (65.0 *. scale))
+    (y + int_of_float (60.0 *. scale))
+    (int_of_float (151.0 *. scale))
+    hp_box_height;
 
-    set_color red;
-    let hp_width =
-      int_of_float
-        (145.0 *. scale *. float_of_int (pos curr_health) /. float_of_int max_health)
-    in
-    fill_rect
-      (x - int_of_float (62.0 *. scale))
-      (y + int_of_float (62.0 *. scale))
-      hp_width hp_bar_height;
-    set_color black;
-    moveto (x - int_of_float (50.0 *. scale)) (y + int_of_float (77.0 *. scale));
-    draw_string
-      ("HP: " ^ string_of_int (pos curr_health) ^ "/" ^ string_of_int max_health)
+  set_color red;
+  let hp_width =
+    int_of_float
+      (145.0 *. scale
+      *. float_of_int (pos curr_health)
+      /. float_of_int max_health)
+  in
+  fill_rect
+    (x - int_of_float (62.0 *. scale))
+    (y + int_of_float (62.0 *. scale))
+    hp_width hp_bar_height;
+  set_color black;
+  moveto (x - int_of_float (50.0 *. scale)) (y + int_of_float (77.0 *. scale));
+  draw_string
+    ("HP: " ^ string_of_int (pos curr_health) ^ "/" ^ string_of_int max_health)
 
 let make_camel x y scale =
   let light_brown = rgb 181 101 29 in
@@ -157,10 +160,122 @@ let play_card hand =
 
 (**[make_hyena] makes a hyena GUI centered at x y.*)
 let make_hyena x y =
-  set_color black;
-  let cpu_x = 400 in
-  let cpu_y = 200 in
-  fill_rect cpu_x cpu_y 10 10
+  let light_brown = rgb 228 204 148 in
+  let brown = rgb 195 157 70 in
+  let cpu_x = x + 25 in
+  let cpu_y = y - 15 in
+
+  set_color brown;
+  fill_ellipse cpu_x cpu_y 35 20;
+  fill_poly
+    [|
+      (cpu_x - 40, cpu_y);
+      (cpu_x - 18, cpu_y - 10);
+      (cpu_x - 18, cpu_y - 55);
+      (cpu_x - 21, cpu_y - 70);
+      (cpu_x - 21, cpu_y - 75);
+      (cpu_x - 36, cpu_y - 75);
+      (cpu_x - 40, cpu_y - 70);
+      (cpu_x - 36, cpu_y - 65);
+      (cpu_x - 32, cpu_y - 66);
+      (cpu_x - 30, cpu_y - 60);
+      (cpu_x - 32, cpu_y - 45);
+      (cpu_x - 30, cpu_y - 30);
+    |];
+  fill_poly (* hind legs *)
+    [|
+      (cpu_x + 23, cpu_y - 18);
+      (cpu_x + 27, cpu_y - 27);
+      (cpu_x + 45, cpu_y - 48);
+      (cpu_x + 45, cpu_y - 66);
+      (cpu_x + 37, cpu_y - 65);
+      (cpu_x + 34, cpu_y - 70);
+      (cpu_x + 35, cpu_y - 75);
+      (cpu_x + 51, cpu_y - 75);
+      (cpu_x + 56, cpu_y - 44);
+      (cpu_x + 41, cpu_y - 21);
+    |];
+  set_color light_brown;
+  fill_poly
+    [|
+      (cpu_x - 40, cpu_y);
+      (cpu_x - 18, cpu_y - 10);
+      (cpu_x - 18, cpu_y - 55);
+      (cpu_x - 21, cpu_y - 70);
+      (cpu_x - 21, cpu_y - 75);
+      (cpu_x - 36, cpu_y - 75);
+      (cpu_x - 35, cpu_y - 70);
+      (cpu_x - 31, cpu_y - 65);
+      (cpu_x - 27, cpu_y - 66);
+      (cpu_x - 25, cpu_y - 60);
+      (cpu_x - 28, cpu_y - 45);
+      (cpu_x - 25, cpu_y - 30);
+      (cpu_x - 34, cpu_y - 18);
+    |];
+  fill_poly
+    [|
+      (cpu_x - 40, cpu_y);
+      (cpu_x - 70, cpu_y + 20);
+      (cpu_x - 55, cpu_y + 35);
+      (cpu_x, cpu_y + 20);
+      (cpu_x - 18, cpu_y - 10);
+    |];
+
+  fill_poly (* body *)
+    [|
+      (cpu_x - 40, cpu_y);
+      (cpu_x - 16, cpu_y - 15);
+      (cpu_x + 5, cpu_y - 25);
+      (cpu_x + 28, cpu_y - 18);
+    |];
+  fill_poly (* hind legs *)
+    [|
+      (cpu_x + 28, cpu_y - 18);
+      (cpu_x + 32, cpu_y - 27);
+      (cpu_x + 50, cpu_y - 48);
+      (cpu_x + 50, cpu_y - 66);
+      (cpu_x + 42, cpu_y - 65);
+      (cpu_x + 39, cpu_y - 70);
+      (cpu_x + 40, cpu_y - 75);
+      (cpu_x + 56, cpu_y - 75);
+      (cpu_x + 61, cpu_y - 44);
+      (cpu_x + 46, cpu_y - 21);
+      (cpu_x + 50, cpu_y + 7);
+      (cpu_x + 48, cpu_y + 14);
+      (cpu_x + 15, cpu_y + 25);
+      (cpu_x - 55, cpu_y + 35);
+      (cpu_x - 40, cpu_y);
+    |];
+
+  fill_poly (* hind legs *)
+    [|
+      (cpu_x + 28, cpu_y - 18);
+      (cpu_x + 32, cpu_y - 27);
+      (cpu_x + 50, cpu_y - 48);
+      (cpu_x + 50, cpu_y - 66);
+      (cpu_x + 42, cpu_y - 65);
+      (cpu_x + 39, cpu_y - 70);
+      (cpu_x + 40, cpu_y - 75);
+      (cpu_x + 56, cpu_y - 75);
+      (cpu_x + 61, cpu_y - 44);
+      (cpu_x + 46, cpu_y - 21);
+      (cpu_x + 50, cpu_y + 7);
+      (cpu_x + 48, cpu_y + 14);
+      (cpu_x + 15, cpu_y + 25);
+      (cpu_x - 55, cpu_y + 35);
+      (cpu_x - 40, cpu_y);
+    |];
+
+  fill_ellipse (cpu_x - 65) (cpu_y + 20) 16 16;
+  let x = cpu_x in
+  let y = cpu_y + 25 in
+  fill_poly
+    [| (x - 63, y + 20); (x - 58, y + 10); (x - 63, y - 5); (x - 70, y + 10) |];
+  let x = cpu_x - 10 in
+  let y = cpu_y + 25 in
+  fill_poly
+    [| (x - 63, y + 20); (x - 58, y + 10); (x - 63, y - 5); (x - 70, y + 10) |];
+  fill_ellipse (cpu_x - 72) (cpu_y + 8) 8 8
 
 (**[check_condition] checks if the user input is an int, and checks if it
    non-negative and less than the total hand.size*)
@@ -188,27 +303,49 @@ let rec game (player : Final_project.Character.t)
     print_endline "Play a card (type index) or End to end turn: ";
     let input = read_line () in
     let affects =
-      ( (Final_project.Deck.get (int_of_string input) hand).cost,
-        (Final_project.Deck.get (int_of_string input) hand).dmg,
-        (Final_project.Deck.get (int_of_string input) hand).defend,
-        (Final_project.Deck.get (int_of_string input) hand).effect )
+      ( Final_project.Card.get_dmg
+          (Final_project.Deck.get (int_of_string input) hand),
+        Final_project.Card.get_defend
+          (Final_project.Deck.get (int_of_string input) hand),
+        Final_project.Card.get_cost
+          (Final_project.Deck.get (int_of_string input) hand),
+        Final_project.Card.get_effect
+          (Final_project.Deck.get (int_of_string input) hand) )
+    in
+    let enemy_attack =
+      match hyena.moves with
+      | [] -> raise (Failure "?")
+      | h :: t -> h
     in
     match affects with
-    | c, d, def, cost ->
+    | d, def, cost, eff ->
         clear_graph ();
         set_color (rgb 208 181 154);
         fill_rect 0 0 (size_x ()) (size_y ());
         make_hyena 400 200;
         make_camel 200 200 1.0;
         make_hp_bar 400 200 20 (hyena.hp - d) 1.0;
-        make_hp_bar 200 200 80 80 1.0;
-        game player
-          (Final_project.Enemy.create_enemy (hyena.hp - d) hyena_moves)
+
+        make_hp_bar 200 200 80
+          (if def - enemy_attack.damage > 0 then
+             Final_project.Character.get_hp player
+           else
+             Final_project.Character.get_hp player + (def - enemy_attack.damage))
+          1.0;
+        game
+          (Final_project.Character.create_camel
+             (if def - enemy_attack.damage > 0 then
+                Final_project.Character.get_hp player
+              else
+                Final_project.Character.get_hp player
+                + (def - enemy_attack.damage))
+             3 "")
+          (Final_project.Enemy.create_enemy (hyena.hp - d) hyena.moves)
           player_hand player_deck
 
 let () =
   open_graph " 640x480";
-  let background_color = rgb 208 181 154 in
+  let background_color = rgb 219 122 74 in
   set_color background_color;
   fill_rect 0 0 (size_x ()) (size_y ());
 
@@ -219,7 +356,7 @@ let () =
   let scale = 1.0 in
   let camel_x = 200 in
   let camel_y = 200 in
-  let cpu_x = 400 in
+  let cpu_x = 440 in
   let cpu_y = 200 in
 
   make_camel camel_x camel_y scale;

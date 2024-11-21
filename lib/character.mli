@@ -1,4 +1,6 @@
 type t
-(**[t] is an abstract type representing a character with hp, energy, and status*)
 
 val create_camel : int -> int -> string -> t
+val get_hp : t -> int
+val get_energy : t -> int
+val get_status : t -> string
