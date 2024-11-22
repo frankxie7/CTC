@@ -1,4 +1,47 @@
 open Graphics
+open Tsdl
+open Tsdl_image
+open Tsdl_ttf
+
+type state =
+  | MainMenu
+  | Active
+
+let state = ref MainMenu
+let width = 1512
+let height = 9. /. 16. *. float_of_int width |> int_of_float
+
+let init () =
+  begin
+    match Tsdl.Sdl.init Tsdl.Sdl.Init.everything with
+    | Ok () -> ()
+    | Error _ -> failwith "Unable to initialize SDL."
+  end;
+  (* ^ initializes everything (sound, graphics, etc.) and raises err if fails*)
+  ignore (Tsdl_image.Image.init Tsdl_image.Image.Init.png);
+  Ttf.init () |> Result.get_ok;
+
+  (* ^ ensures that the image is a png *)
+  let open Image.Init in
+  Image.init (jpg + png) |> ignore;
+  let window =
+    Tsdl.Sdl.create_window "rah" ~w:width ~h:height Tsdl.Sdl.Window.fullscreen
+    |> Result.get_ok
+  in
+  let r =
+    Tsdl.Sdl.create_renderer ~index:(-1) ~flags:Tsdl.Sdl.Renderer.presentvsync
+      window
+    |> Result.get_ok
+  in
+  let w, h = Tsdl.Sdl.get_window_size window in
+  Printf.printf "%s, %s" (string_of_int w) (string_of_int h);
+  print_endline "";
+  Tsdl.Sdl.render_set_logical_size r width height |> Result.get_ok;
+  r
+
+(* let draw r dt = Tsdl.Sdl.render_clear r |> ignore; Tsdl.Sdl.render_set_scale
+   r 1.0 1.0 |> ignore; begin match !state with | MainMenu -> (*draw main menu*)
+   | Active -> (*draw level*) end; Tsdl.Sdl.render_present r *)
 
 (**[pos ch] handles when current health is less than 0. If it is negative then
    it equals 0, if it isn't then it returns itself.*)
