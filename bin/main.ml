@@ -45,6 +45,19 @@ let make_camel x y scale =
 
   fill_ellipse x y body_width body_height;
 
+  (*flush with render present have different states like active - paused -etc,
+    reference space invaders
+
+    redner copy - takes rectangle (+ destination), renderer, and texture
+    Rectangle : take s in sorce and desitnation create.renderer - window texture
+    - path of the file
+
+    create a texture when initializing a texture by load texture - requres
+    rendere - filename, and retursn texture never change texture
+
+    Cards - keep track of mouse cursor using get_cursor look through cursor.
+
+    Button - for start menu and such match up *)
   (* Camel body *)
   let hump_x = x in
   let hump_y = y + int_of_float (13.0 *. scale) in
@@ -135,14 +148,15 @@ let camel1A_hand =
   [
     Final_project.Card.basicA;
     Final_project.Card.basicA;
-    (* Final_project.Card.basicD; Final_project.Card.basicD; *)
+    Final_project.Card.basicD;
+    Final_project.Card.basicD;
     Final_project.Card.basicAD;
   ]
 
 let hyena_moves =
   [
-    Final_project.Enemy.create_move 6 0 "None";
-    Final_project.Enemy.create_move 6 0 "None";
+    Final_project.Enemy.create_move 7 0 "None";
+    Final_project.Enemy.create_move 5 0 "None";
   ]
 
 (**[draw_one] takes in a hand and deck and appends the first element of deck
@@ -320,11 +334,12 @@ let rec game (player : Final_project.Character.t)
     match affects with
     | d, def, cost, eff ->
         clear_graph ();
-        set_color (rgb 208 181 154);
+        let background_color = rgb 219 122 74 in
+        set_color background_color;
         fill_rect 0 0 (size_x ()) (size_y ());
-        make_hyena 400 200;
+        make_hyena 440 200;
         make_camel 200 200 1.0;
-        make_hp_bar 400 200 20 (hyena.hp - d) 1.0;
+        make_hp_bar 440 200 20 (hyena.hp - d) 1.0;
 
         make_hp_bar 200 200 80
           (if def - enemy_attack.damage > 0 then
