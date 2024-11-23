@@ -1,8 +1,6 @@
 (lang dune 3.16)
 
-(name final_project)
-
-(generate_opam_files true)
+(name game)
 
 (source
  (github username/reponame))
@@ -15,12 +13,15 @@
 
 (documentation https://url/to/documentation)
 
+
 (package
- (name final_project)
+ (name game)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml dune)
- (tags
-  (topics "to describe" your project)))
+ (depends ocaml tsdl tsdl-image dune))
 
-; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html
+(package
+ (name lib)
+ (synopsis "Library for game modules")
+ (description "Internal utility modules for the game project")
+ (depends ocaml tsdl tsdl-image dune))

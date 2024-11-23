@@ -1,4 +1,3 @@
 (executable
- (public_name final_project)
  (name main)
- (libraries final_project graphics tsdl tsdl-image tsdl-ttf))
+ (libraries game))

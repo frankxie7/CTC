@@ -1,2 +1,4 @@
 (library
- (name final_project))
+ (name lib)
+ (public_name lib)
+ (libraries tsdl tsdl-image))
