@@ -1,4 +1,4 @@
 (library
  (name game)
  (public_name game)
- (libraries lib tsdl tsdl-image graphics))
+ (libraries lib tsdl tsdl-image))
