@@ -5,6 +5,8 @@ open Enemy
 
 let width = 1512
 let height = 850
+let camel_max_hp = 100
+let enemy_max_hp = 50
 
 type t = {
   mutable player : Camel.t;
@@ -43,7 +45,6 @@ let init_hp_bar x y curr_health max_health r : unit =
   Tsdl.Sdl.set_render_draw_color r 255 255 255 255 |> ignore
 
 let init_players_hp (t : players) r : unit =
-  init_hp_bar camel_x camel_y (Camel.get_hp t.player) (Camel.get_hp init_camel)
-    r;
-  init_hp_bar (enemy_x + 15) (enemy_y - 15) (Enemy.get_hp t.enemy)
-    (Enemy.get_hp init_enemy) r
+  init_hp_bar camel_x camel_y (Camel.get_hp t.player) camel_max_hp r;
+  init_hp_bar (enemy_x + 15) (enemy_y - 15) (Enemy.get_hp t.enemy) enemy_max_hp
+    r

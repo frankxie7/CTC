@@ -12,8 +12,8 @@ let camel_x = 250
 let camel_y = 500
 let create_camel h e s : t = { hp = h; energy = e; status = s }
 let init_camel : t = { hp = 100; energy = 100; status = "None" }
-let update_hp t x = t.hp <- x
-let update_energy t x = t.energy <- x
+let update_hp t x = t.hp <- t.hp - x
+let update_energy t x = t.energy <- t.energy - x
 let update_status t x = t.status <- x
 let get_hp t = t.hp
 let get_energy t = t.energy

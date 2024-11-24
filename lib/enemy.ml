@@ -22,6 +22,8 @@ let hyena_moves = [ create_move 7 0 "None"; create_move 5 0 "None" ]
 let create_enemy h m : t = { hp = h; moves = m }
 let init_enemy : t = { hp = 50; moves = hyena_moves }
 let get_hp t = t.hp
+let get_moves t = t.moves
+let update_hp t x = t.hp <- t.hp - x
 
 let draw_hyena row col src_width src_height r t =
   let src = Rect.create ~x:row ~y:col ~w:src_width ~h:src_height in
