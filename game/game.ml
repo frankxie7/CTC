@@ -1,6 +1,6 @@
 open Graphics
 open Tsdl_image
-open Tsdl
+open Tsdl.Sdl
 open Lib
 (* open Tsdl_ttf *)
 
@@ -12,7 +12,7 @@ let make_hp_bar x y max_health curr_health scale =
   let hp_box_height = int_of_float (15.0 *. scale) in
   let hp_bar_height = int_of_float (11.0 *. scale) in
   set_color white;
-  fill_rect
+  Graphics.fill_rect
     (x - int_of_float (65.0 *. scale))
     (y + int_of_float (60.0 *. scale))
     (int_of_float (151.0 *. scale))
@@ -25,7 +25,7 @@ let make_hp_bar x y max_health curr_health scale =
       *. float_of_int (pos curr_health)
       /. float_of_int max_health)
   in
-  fill_rect
+  Graphics.fill_rect
     (x - int_of_float (62.0 *. scale))
     (y + int_of_float (62.0 *. scale))
     hp_width hp_bar_height;
@@ -333,7 +333,7 @@ let rec game (player : Lib.Camel.t) (hyena : Lib.Enemy.t)
         clear_graph ();
         let background_color = rgb 219 122 74 in
         set_color background_color;
-        fill_rect 0 0 (size_x ()) (size_y ());
+        Graphics.fill_rect 0 0 (size_x ()) (size_y ());
         make_hyena 440 200;
         make_camel 200 200 1.0;
         make_hp_bar 440 200 20 (hyena.hp - d) 1.0;
@@ -354,7 +354,7 @@ let run () =
   open_graph " 640x480";
   let background_color = rgb 219 122 74 in
   set_color background_color;
-  fill_rect 0 0 (size_x ()) (size_y ());
+  Graphics.fill_rect 0 0 (size_x ()) (size_y ());
 
   let camel_max_hp = 80 in
   let camel_curr_hp = 80 in
@@ -381,7 +381,8 @@ let run () =
   let _ = read_line () in
   close_graph ()
 
-type state = (* | MainMenu *)
+type state =
+  (* | MainMenu -> (optional) add in main menu or paused state*)
   | Active
 
 (*change this to ref MainMenu later*)
@@ -390,88 +391,87 @@ let width = 1512
 let height = 850
 
 let create_renderer window =
-  match
-    Sdl.create_renderer ~index:(-1) ~flags:Sdl.Renderer.presentvsync window
-  with
+  match create_renderer ~index:(-1) ~flags:Renderer.presentvsync window with
   | Ok r -> r
-  | Error e -> failwith ("Unable to create renderer: " ^ Sdl.get_error ())
+  | Error e -> failwith ("Unable to create renderer: " ^ get_error ())
 
 let load_texture renderer path =
   match Image.load_texture renderer path with
   | Ok texture -> texture
   | Error (`Msg e) -> failwith ("Unable to load texture: " ^ e)
 
-let draw_background_texture renderer texture =
-  (* Define source rectangle (entire texture) *)
-  let src = Sdl.Rect.create ~x:0 ~y:0 ~w:1920 ~h:1281 in
-  (* Define destination rectangle (where it will appear on the screen) *)
-  let dest = Sdl.Rect.create ~x:0 ~y:0 ~w:width ~h:height in
-  match Sdl.render_copy ~src ~dst:dest renderer texture with
-  | Ok () -> ()
-  | Error (`Msg e) -> failwith ("Unable to render texture: " ^ e)
-
-let draw_camel_texture renderer texture =
-  let src = Sdl.Rect.create ~x:0 ~y:0 ~w:1920 ~h:1281 in
-  (* Define destination rectangle (where it will appear on the screen) *)
-  let dest = Sdl.Rect.create ~x:0 ~y:0 ~w:width ~h:height in
-  match Sdl.render_copy ~src ~dst:dest renderer texture with
-  | Ok () -> ()
-  | Error (`Msg e) -> failwith ("Unable to render texture: " ^ e)
+(* let draw_background_texture renderer texture = let src = Rect.create ~x:200
+   ~y:100 ~w:1720 ~h:1181 in let dest = Rect.create ~x:0 ~y:0 ~w:width ~h:height
+   in match render_copy ~src ~dst:dest renderer texture with | Ok () -> () |
+   Error (`Msg e) -> failwith ("Unable to render texture: " ^ e) *)
+(* let draw_camel_texture width height renderer texture = let src = Rect.create
+   ~x:0 ~y:0 ~w:100 ~h:175 in let dest = Rect.create ~x:0 ~y:0 ~w:width
+   ~h:height in match render_copy ~src ~dst:dest renderer texture with | Ok ()
+   -> () | Error (`Msg e) -> failwith ("Unable to render texture: " ^ e) *)
 
 let init () =
   begin
-    match Sdl.init Sdl.Init.everything with
+    match init Init.everything with
     | Ok () -> ()
     | Error (`Msg e) -> failwith ("Unable to initialize SDL: " ^ e)
   end;
-  (* Initialize SDL_image *)
+
   match Image.init Image.Init.png with
   | _ ->
       ();
-
-      (* You can check for specific initialization flags here *)
       let window =
-        Sdl.create_window "Camel Caravan" ~w:width ~h:height Sdl.Window.shown
+        create_window "Camel Caravan" ~w:width ~h:height Window.shown
         |> Result.get_ok
       in
+      let renderer =
+        Tsdl.Sdl.create_renderer ~index:(-1)
+          ~flags:Tsdl.Sdl.Renderer.presentvsync window
+        |> Result.get_ok
+      in
+      let background_texture =
+        match Image.load_texture renderer "assets/desert.png" with
+        | Ok texture -> texture
+        | Error (`Msg e) -> failwith ("Unable to load background texture: " ^ e)
+      in
+      let camel_texture =
+        match Image.load_texture renderer "assets/camel.png" with
+        | Ok texture -> texture
+        | Error (`Msg e) -> failwith ("Unable to load camel texture: " ^ e)
+      in
+      (renderer, (background_texture, camel_texture))
 
-      (* Create a renderer *)
-      let renderer = create_renderer window in
+let draw r bg_texture camel_texture =
+  (*clears the renderer *)
+  render_clear r |> ignore;
+  (* section of the png that you want *)
+  Level.draw_level r bg_texture camel_texture 27 21;
+  (* updates the renderer *)
+  render_present r
 
-      (* Load a texture *)
-      let background_texture = load_texture renderer "assets/desert.png" in
-      (*https://freeartbackgrounds.com/?1162,desert-background*)
-      (* let camel_texture = load_texture renderer "assets/camel_animations.png"
-         in *)
-      (* Main loop *)
-      let running = ref true in
-      while !running do
-        (* Event handling *)
-        let event = Sdl.Event.create () in
-        while Sdl.poll_event (Some event) do
-          match Sdl.Event.get event Sdl.Event.typ with
-          | t when t = Sdl.Event.quit -> running := false
-          | _ -> ()
-        done;
+let run () : unit =
+  let renderer, (bg_texture, camel_texture) = init () in
 
-        (* Clear screen *) Sdl.render_clear renderer |> ignore;
+  let rec check_quit () =
+    let event = Event.create () in
+    if poll_event (Some event) then
+      match Event.get event Event.typ with
+      | t when t = Event.quit -> true
+      | t when t = Event.key_down ->
+          let keycode = Event.get event Event.keyboard_keycode in
+          keycode = K.escape
+      | _ -> false
+    else false
+  in
 
-        (* Draw the texture *)
-        draw_background_texture renderer background_texture;
+  let rec main_loop () =
+    if not (check_quit ()) then begin
+      draw renderer bg_texture camel_texture;
+      main_loop ()
+    end
+    else log "Exiting the application. Goodbye!"
+  in
 
-        (* Present the rendered frame *) Sdl.render_present renderer
-      done;
+  main_loop ();
+  quit ()
 
-      (* Cleanup resources *) Sdl.destroy_texture background_texture;
-      Sdl.destroy_renderer renderer;
-      Sdl.destroy_window window;
-
-      (* Quit SDL subsystems *) Sdl.quit ();
-      Image.quit ();
-      ()
-(* let draw r dt = Tsdl.Sdl.render_clear r |> ignore; Tsdl.Sdl.render_set_scale
-   r 1.0 1.0 |> ignore; begin match !state with | Active ->
-   draw_animated_level_loader r level_loader dt end; Tsdl.Sdl.render_present
-   r *)
-
-let main () = init ()
+let main () = run ()
