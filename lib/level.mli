@@ -11,9 +11,13 @@ val draw_level :
   Sdl.renderer ->
   (* SDL renderer *)
   Sdl.texture ->
+  (* Background texture *)
+  Sdl.texture ->
   (* Camel texture *)
   Sdl.texture ->
-  (* Background texture *)
+  (* Hyena texture *)
   int ->
   int ->
   unit
+
+val init_players_hp : t -> Sdl.renderer -> unit

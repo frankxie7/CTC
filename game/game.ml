@@ -400,15 +400,7 @@ let load_texture renderer path =
   | Ok texture -> texture
   | Error (`Msg e) -> failwith ("Unable to load texture: " ^ e)
 
-(* let draw_background_texture renderer texture = let src = Rect.create ~x:200
-   ~y:100 ~w:1720 ~h:1181 in let dest = Rect.create ~x:0 ~y:0 ~w:width ~h:height
-   in match render_copy ~src ~dst:dest renderer texture with | Ok () -> () |
-   Error (`Msg e) -> failwith ("Unable to render texture: " ^ e) *)
-(* let draw_camel_texture width height renderer texture = let src = Rect.create
-   ~x:0 ~y:0 ~w:100 ~h:175 in let dest = Rect.create ~x:0 ~y:0 ~w:width
-   ~h:height in match render_copy ~src ~dst:dest renderer texture with | Ok ()
-   -> () | Error (`Msg e) -> failwith ("Unable to render texture: " ^ e) *)
-
+(**[init] initializes window, renderer, background texture, camel texture*)
 let init () =
   begin
     match init Init.everything with
@@ -438,19 +430,26 @@ let init () =
         | Ok texture -> texture
         | Error (`Msg e) -> failwith ("Unable to load camel texture: " ^ e)
       in
-      (renderer, (background_texture, camel_texture))
+      let enemy_texture =
+        match Image.load_texture renderer "assets/wolf.png" with
+        | Ok texture -> texture
+        | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
+      in
+      (renderer, (background_texture, camel_texture, enemy_texture))
 
-let draw r bg_texture camel_texture =
-  (*clears the renderer *)
+let draw p r bg_texture camel_texture enemy_texture =
+  (* clears the renderer *)
   render_clear r |> ignore;
   (* section of the png that you want *)
-  Level.draw_level r bg_texture camel_texture 27 21;
+  Level.draw_level r bg_texture camel_texture enemy_texture 27 21;
   (* updates the renderer *)
+  Level.init_players_hp p r;
   render_present r
 
 let run () : unit =
-  let renderer, (bg_texture, camel_texture) = init () in
+  let renderer, (bg_texture, camel_texture, enemy_texture) = init () in
 
+  (* temporary quit functionality *)
   let rec check_quit () =
     let event = Event.create () in
     if poll_event (Some event) then
@@ -463,15 +462,19 @@ let run () : unit =
     else false
   in
 
-  let rec main_loop () =
+  let rec main_loop p h d =
     if not (check_quit ()) then begin
-      draw renderer bg_texture camel_texture;
-      main_loop ()
+      draw p renderer bg_texture camel_texture enemy_texture;
+      main_loop p h d
     end
     else log "Exiting the application. Goodbye!"
   in
-
-  main_loop ();
+  let players : Level.t =
+    { player = Camel.init_camel; enemy = Enemy.init_enemy }
+  in
+  let deck = Lib.Deck.empty |> List.fold_right Lib.Deck.push camel1A_deck in
+  let hand = Lib.Deck.empty |> List.fold_right Lib.Deck.push camel1A_hand in
+  main_loop players hand deck;
   quit ()
 
 let main () = run ()

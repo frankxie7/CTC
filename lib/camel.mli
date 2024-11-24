@@ -2,6 +2,8 @@ open Tsdl
 
 type t
 
+val camel_x : int
+val camel_y : int
 val create_camel : int -> int -> string -> t
 val init_camel : t
 val get_hp : t -> int
