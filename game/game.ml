@@ -171,7 +171,7 @@ let run () : unit =
       game p h d;
       main_loop p h d
     end
-    else log "Exiting the application. Goodbye!"
+    else log "quitting"
   in
   let players : Level.t =
     { player = Camel.init_camel; enemy = Enemy.init_enemy }
