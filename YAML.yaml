@@ -1,0 +1,30 @@
+---
+# Members of your group.
+group:
+  - name: Frank Xie
+    netid: fx58
+  - name: Harvey Zhu
+    netid: hz639
+  - name: Alex Jankowich
+    netid: aej56
+# Your PM.
+pm:
+  name: Angela Zhang
+  netid: az345
+# Set to false if you don't want your gallery entry to be public.
+publish: true
+# Pithy title
+title: "The Complete Caml Calculator (CCC)"
+# OK if this is a Cornell Github link, but public gallery viewers won't be able to see it.
+git-repo: "https://github.coecis.cornell.edu/hz639/3110_final_project"
+# Replace the URL with your own demo video.
+demo-video-url: "https://youtu.be/mHJhsWRKO88"
+# Write a short, attention-grabbing description of your project.
+desc: >
+  Our project is a dungeon climber game. It uses randomized cards to allow
+  users to defend against enemies on multiple floors. Players have to 
+  allocate energy to use cards effectively in order to succeed. Each level 
+  the enemies get harder to defeat, requiring both luck and skill from the 
+  player to succeed. 
+
+  Graphics are generated using OCaml's Graphics library.

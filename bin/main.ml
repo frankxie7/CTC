@@ -152,11 +152,12 @@ let draw_one hand deck =
   let new_hand = Final_project.Deck.push (Final_project.Deck.peek deck) hand in
   (new_hand, Final_project.Deck.pop deck)
 
-(**[play_card] takes in a hand and returns a tuple of the top card and the
-   updated hand.*)
-let play_card hand =
-  let top_card = Final_project.Deck.peek hand in
-  (top_card, Final_project.Deck.pop hand)
+(**[play_card] takes in a hand and index. Returns the played card and the new
+   hand.*)
+let play_card hand index =
+  let played_card = Final_project.Deck.get index hand in
+  let new_hand = Final_project.Deck.remove index hand in
+  (played_card, new_hand)
 
 (**[make_hyena] makes a hyena GUI centered at x y.*)
 let make_hyena x y =
@@ -281,67 +282,85 @@ let make_hyena x y =
    non-negative and less than the total hand.size*)
 let check_conditions input hand =
   try
-    let intput = int_of_string input in
-    if intput > Final_project.Deck.size hand && intput >= 0 then
-      failwith "Uh oh! Index out of bound"
-    else input
-  with Sys_error msg ->
-    Printf.printf "Error: %s\n" msg;
-    (*idk what to do with input so it just returns it but we prolly have to
-      check this*)
-    input
+    let index = int_of_string input in
+    if index < 1 || index > Final_project.Deck.size hand then
+      failwith "Uh oh! Index out of bounds"
+    else index
+  with
+  | Failure _ -> failwith "Invalid input. Enter a valid number."
+  | _ -> failwith "Unexpected error"
 
 let rec game (player : Final_project.Character.t)
     (hyena : Final_project.Enemy.t)
-    (player_hand : Final_project.Card.t Final_project.Deck.t) player_deck =
-  if hyena.hp <= 0 then print_endline "Game Over"
-  else
-    let hand_deck_tuple = draw_one player_hand player_deck in
-    let hand = fst hand_deck_tuple in
-    (* let deck = snd hand_deck_tuple in *)
+    (player_hand : Final_project.Card.t Final_project.Deck.t)
+    (player_deck : Final_project.Card.t Final_project.Deck.t) =
+  if hyena.hp <= 0 then print_endline "You defeated the hyena! Game Over."
+  else if Final_project.Character.get_hp player <= 0 then
+    print_endline "You have been defeated! Game Over."
+  else (
     Final_project.Deck.print (Final_project.Deck.to_list player_hand);
+
     print_endline "Play a card (type index) or End to end turn: ";
     let input = read_line () in
-    let affects =
-      ( Final_project.Card.get_dmg
-          (Final_project.Deck.get (int_of_string input) hand),
-        Final_project.Card.get_defend
-          (Final_project.Deck.get (int_of_string input) hand),
-        Final_project.Card.get_cost
-          (Final_project.Deck.get (int_of_string input) hand),
-        Final_project.Card.get_effect
-          (Final_project.Deck.get (int_of_string input) hand) )
-    in
-    let enemy_attack =
-      match hyena.moves with
-      | [] -> raise (Failure "?")
-      | h :: t -> h
-    in
-    match affects with
-    | d, def, cost, eff ->
+    if input = "End" then (
+      (* Draw one card at the end of the turn *)
+      let updated_hand, updated_deck = draw_one player_hand player_deck in
+      print_endline "You drew a card!";
+
+      (* Execute the enemy's move *)
+      let enemy_attack =
+        match hyena.moves with
+        | [] -> raise (Failure "Enemy has no moves")
+        | move :: _ -> move
+      in
+      let damage_taken = enemy_attack.damage in
+      let new_player_hp =
+        Final_project.Character.get_hp player - damage_taken
+      in
+      print_endline
+        (Printf.sprintf "Enemy attacks! You take %d damage!" damage_taken);
+
+      game
+        (Final_project.Character.create_camel new_player_hp 3 "")
+        hyena updated_hand updated_deck)
+    else
+      try
+        let index = check_conditions input player_hand in
+        let card, updated_hand = play_card player_hand index in
+        let dmg = Final_project.Card.get_dmg card in
+        let def = Final_project.Card.get_defend card in
+
+        let enemy_attack =
+          match hyena.moves with
+          | [] -> raise (Failure "Enemy has no moves")
+          | move :: _ -> move
+        in
+
+        let damage_taken = max 0 (enemy_attack.damage - def) in
+        let new_player_hp =
+          Final_project.Character.get_hp player - damage_taken
+        in
+
         clear_graph ();
         set_color (rgb 208 181 154);
         fill_rect 0 0 (size_x ()) (size_y ());
         make_hyena 400 200;
         make_camel 200 200 1.0;
-        make_hp_bar 400 200 20 (hyena.hp - d) 1.0;
+        make_hp_bar 400 200 20 (hyena.hp - dmg) 1.0;
 
         make_hp_bar 200 200 80
           (if def - enemy_attack.damage > 0 then
              Final_project.Character.get_hp player
-           else
-             Final_project.Character.get_hp player + (def - enemy_attack.damage))
+           else new_player_hp)
           1.0;
+
         game
-          (Final_project.Character.create_camel
-             (if def - enemy_attack.damage > 0 then
-                Final_project.Character.get_hp player
-              else
-                Final_project.Character.get_hp player
-                + (def - enemy_attack.damage))
-             3 "")
-          (Final_project.Enemy.create_enemy (hyena.hp - d) hyena.moves)
-          player_hand player_deck
+          (Final_project.Character.create_camel new_player_hp 3 "")
+          (Final_project.Enemy.create_enemy (hyena.hp - dmg) hyena.moves)
+          updated_hand player_deck
+      with Failure msg ->
+        print_endline msg;
+        game player hyena player_hand player_deck)
 
 let () =
   open_graph " 640x480";
@@ -366,15 +385,14 @@ let () =
 
   let camel = Final_project.Character.create_camel 80 3 "" in
   let hyena = Final_project.Enemy.create_enemy 20 hyena_moves in
+  Random.self_init ();
+
   let deck =
-    Final_project.Deck.empty
-    |> List.fold_right Final_project.Deck.push camel1A_deck
+    List.fold_right Final_project.Deck.push camel1A_deck
+      Final_project.Deck.empty
+    |> Final_project.Deck.shuffle
   in
-  (* TODO - randomization function of Deck *)
-  let hand =
-    Final_project.Deck.empty
-    |> List.fold_right Final_project.Deck.push camel1A_hand
-  in
+  let hand, deck = Final_project.Deck.draw 5 deck Final_project.Deck.empty in
   game camel hyena hand deck;
 
   let _ = read_line () in

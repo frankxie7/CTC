@@ -30,5 +30,9 @@ val remove : int -> 'a t -> 'a t
 (**[remove n d] removes the card from given position and gives the deck 
 without the element. Raises Empty if n > [size d] + 1*)
 
+val shuffle : 'a t -> 'a t 
+
+val draw : int -> 'a t -> 'a t -> 'a t * 'a t
+
 val print : Card.t list -> unit
-(**[print d] prints the deck representation for list.*)
+  (**[print d] prints the deck representation for list.*)

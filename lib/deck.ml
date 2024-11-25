@@ -25,11 +25,22 @@ let to_list = Fun.id
 
 let rec get (n : int) = function
   | [] -> raise Empty
-  | t :: s -> if n = 0 then t else get (n - 1) s
+  | t :: s -> if n = 1 then t else get (n - 1) s
 
 let rec remove (n : int) = function
   | [] -> raise Empty
   | s :: d -> if n = 1 then d else s :: remove (n - 1) d
+
+let shuffle deck =
+  let deck_array = Array.of_list deck in
+  Array.sort (fun _ _ -> Random.int 3 - 1) deck_array;
+  Array.to_list deck_array
+
+let rec draw n deck hand =
+  if n = 0 || is_empty deck then (hand, deck)
+  else
+    let card = peek deck in
+    draw (n - 1) (pop deck) (push card hand)
 
 let print (deck_lst : Card.t list) =
   List.iteri
