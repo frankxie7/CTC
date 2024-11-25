@@ -33,7 +33,13 @@ let rec remove (n : int) = function
 
 let shuffle deck =
   let deck_array = Array.of_list deck in
-  Array.sort (fun _ _ -> Random.int 3 - 1) deck_array;
+  let n = Array.length deck_array in
+  for i = n - 1 downto 1 do
+    let j = Random.int (i + 1) in
+    let temp = deck_array.(i) in
+    deck_array.(i) <- deck_array.(j);
+    deck_array.(j) <- temp
+  done;
   Array.to_list deck_array
 
 let rec draw n deck hand =
