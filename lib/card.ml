@@ -12,12 +12,15 @@ let print_card card =
    ^ string_of_int card.dmg ^ " | defend : " ^ string_of_int card.defend
    ^ " | effect : " ^ card.effect)
 
-let basicA = { name = "Attack"; cost = 1; dmg = 6; defend = 0; effect = "None" }
-let basicD = { name = "Defend"; cost = 1; dmg = 0; defend = 6; effect = "None" }
+let basicA = { name = "spit"; cost = 1; dmg = 10; defend = 0; effect = "None" }
+
+let basicD =
+  { name = "defend"; cost = 1; dmg = 0; defend = 10; effect = "None" }
 
 let basicAD =
-  { name = "Attack & Defend"; cost = 2; dmg = 10; defend = 5; effect = "None" }
+  { name = "stomp"; cost = 2; dmg = 10; defend = 10; effect = "None" }
 
+let get_name t = t.name
 let get_cost t = t.cost
 let get_dmg t = t.dmg
 let get_defend t = t.defend

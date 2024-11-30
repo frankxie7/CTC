@@ -8,3 +8,4 @@ val get_cost : t -> int
 val get_dmg : t -> int
 val get_defend : t -> int
 val get_effect : t -> string
+val get_name : t -> string

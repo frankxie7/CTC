@@ -72,6 +72,7 @@ type state =
 let state = ref Active
 let width = 1512
 let height = 850
+let anim = ref "idle"
 
 let create_renderer window =
   match create_renderer ~index:(-1) ~flags:Renderer.presentvsync window with
@@ -109,7 +110,7 @@ let init () =
         | Error (`Msg e) -> failwith ("Unable to load background texture: " ^ e)
       in
       let camel_texture =
-        match Image.load_texture renderer "assets/camel.png" with
+        match Image.load_texture renderer "assets/camelcamel.png" with
         | Ok texture -> texture
         | Error (`Msg e) -> failwith ("Unable to load camel texture: " ^ e)
       in
@@ -120,18 +121,25 @@ let init () =
       in
       (renderer, (background_texture, camel_texture, enemy_texture))
 
-let draw p r bg_texture camel_texture enemy_texture =
-  (* clears the renderer *)
+let draw p r bg_texture camel_texture enemy_texture frame_count =
+  (* Clear the renderer *)
   render_clear r |> ignore;
-  (* section of the png that you want *)
+
+  (* Draw background and static elements *)
   Level.draw_level r bg_texture camel_texture enemy_texture 27 21;
-  (* updates the renderer *)
+
+  (* Draw animated camel based on the current animation state *)
+  Level.draw_animation r Animations.animation_table !anim frame_count 64 64 100
+    50 camel_texture;
+
+  (* Draw player health or other UI elements *)
   Level.init_players_hp p r;
+
+  (* Present the updated frame *)
   render_present r
 
 let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     (deck : Lib.Card.t Lib.Deck.t) =
-  (* Check if either the player or enemy is defeated *)
   if Enemy.get_hp state.enemy <= 0 then (
     print_endline "You defeated the hyena! Game Over.";
     failwith "Game Over")
@@ -139,99 +147,73 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     print_endline "You have been defeated! Game Over.";
     failwith "Game Over")
   else (
-    (* Print the current hand *)
     Lib.Deck.print (Lib.Deck.to_list hand);
     print_endline "Play a card (type index) or type 'End' to end turn:";
 
-    (* Read player input *)
     let input = read_line () in
-
-    (* If the player ends their turn *)
     if input = "End" then (
-      (* Draw one card *)
       let updated_hand, updated_deck = draw_one hand deck in
       print_endline "You drew a card!";
-
-      (* Enemy attacks *)
       let enemy_attack =
         match Enemy.get_moves state.enemy with
         | [] -> raise (Failure "Enemy has no moves")
         | move :: _ -> move
       in
-
-      (* Calculate damage taken by the player *)
-      let damage_taken = enemy_attack.damage in
-      Camel.update_hp state.player damage_taken;
+      Camel.update_hp state.player enemy_attack.damage;
       print_endline
-        (Printf.sprintf "Enemy attacks! You take %d damage!" damage_taken);
-
-      (* Return updated hand and deck *)
+        (Printf.sprintf "Enemy attacks! You take %d damage!" enemy_attack.damage);
       (state, updated_hand, updated_deck))
     else
       try
-        (* Process the player's action *)
         let index = check_conditions input hand in
         let card, updated_hand = play_card hand index in
+        anim := Lib.Card.get_name card;
 
-        (* Get card effects *)
+        (* Update animation state *)
         let dmg = Lib.Card.get_dmg card in
         let def = Lib.Card.get_defend card in
 
-        (* Enemy attacks *)
         let enemy_attack =
           match Enemy.get_moves state.enemy with
           | [] -> raise (Failure "Enemy has no moves")
           | move :: _ -> move
         in
 
-        (* Calculate net damage to the player and enemy *)
         let total_damage_taken = max 0 (enemy_attack.damage - def) in
         Camel.update_hp state.player total_damage_taken;
         Enemy.update_hp state.enemy dmg;
 
-        print_endline
-          (Printf.sprintf
-             "You dealt %d damage to the enemy! Enemy has %d HP remaining." dmg
-             (Enemy.get_hp state.enemy));
+        print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg);
         if total_damage_taken > 0 then
           print_endline
-            (Printf.sprintf
-               "Enemy attacked! You defended %d damage and took %d damage." def
-               total_damage_taken)
-        else print_endline "Enemy's attack was completely blocked!";
+            (Printf.sprintf "You took %d damage after defending %d!"
+               total_damage_taken def)
+        else print_endline "Enemy's attack was blocked!";
 
-        (* Return updated state, hand, and deck *)
         (state, updated_hand, deck)
       with Failure msg ->
-        (* Handle invalid input *)
         print_endline msg;
         (state, hand, deck))
 
 let run () : unit =
   let renderer, (bg_texture, camel_texture, enemy_texture) = init () in
 
-  (* temporary quit functionality *)
   let rec check_quit () =
     let event = Event.create () in
     if poll_event (Some event) then
       match Event.get event Event.typ with
       | t when t = Event.quit -> true
       | t when t = Event.key_down ->
-          let keycode = Event.get event Event.keyboard_keycode in
-          keycode = K.escape
+          Event.get event Event.keyboard_keycode = K.escape
       | _ -> false
     else false
   in
 
-  let rec main_loop state hand deck =
+  let rec main_loop state hand deck frame_count =
     if not (check_quit ()) then (
-      draw state renderer bg_texture camel_texture enemy_texture;
-
-      (* Call the game function and retrieve updated state, hand, and deck *)
+      draw state renderer bg_texture camel_texture enemy_texture frame_count;
       let updated_state, updated_hand, updated_deck = game state hand deck in
-
-      (* Continue the main loop with updated values *)
-      main_loop updated_state updated_hand updated_deck)
+      main_loop updated_state updated_hand updated_deck (frame_count + 1))
     else log "Quitting"
   in
 
@@ -241,7 +223,7 @@ let run () : unit =
   let full_deck = List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty in
   let shuffled_deck = Lib.Deck.shuffle full_deck in
   let hand, deck = Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty in
-  main_loop players hand deck;
+  main_loop players hand deck 0;
   quit ()
 
 let main () = run ()
