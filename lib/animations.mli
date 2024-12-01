@@ -4,7 +4,7 @@ open Tsdl
 type t = {
   name : string;  (** Name of the animation *)
   col : int;  (** Column index in the sprite sheet *)
-  frame_num : int;  (** Number of frames in the animation *)
+  total_frames : int;  (** Total number of frames in the animation *)
 }
 (** Type representing an animation. *)
 
@@ -19,11 +19,6 @@ val get_col : t -> int
 
 val get_frame_num : t -> int
 (** [get_frame_num t] returns the number of frames in the animation. *)
-
-val col_space : int
-(** Distance between each column of frames in the sprite sheet. *)
-
-val row_space : int
 
 val animate : string -> int -> int -> t
 (** [animate name col frame_num] creates a new animation. *)

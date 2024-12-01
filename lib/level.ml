@@ -3,12 +3,10 @@ open Tsdl_image
 open Camel
 open Enemy
 open Animations
+open Const
 
-let width = 1512
-let height = 850
-let camel_max_hp = 100
-let enemy_max_hp = 50
 let init_anim = idle
+let init_y = 7
 let calculate_frame frame_count total_frames = frame_count mod total_frames
 
 type t = {
@@ -16,34 +14,36 @@ type t = {
   mutable enemy : Enemy.t;
 }
 
-let draw_animation r animation_table anim_name frame_count src_width src_height
-    dst_x dst_y texture =
+let draw_animation r animation_table anim_name frame_count texture =
+  (* TODO : check if frame_count is less than total_frame number *)
   match Hashtbl.find_opt animation_table anim_name with
   | Some animation ->
-      (* Calculate current frame based on frame count and total frames *)
-      let current_frame = frame_count mod animation.frame_num in
-      let src_x = 0 in
-      let src_y = (animation.col + current_frame) * src_height in
-      (* Assuming all animations are on the same row *)
+      (* TODO : check if this works - col is not completely implemented yet but
+         it should either be (1) 1-2-3 representing the col of the animation or
+         the actual y coordinates of the animation. *)
       let src_rect =
-        Sdl.Rect.create ~x:src_x ~y:src_y ~w:src_width ~h:src_height
+        Sdl.Rect.create
+          ~x:(camel_init_height + frame_height)
+          ~y:(camel_init_width + (frame_width * (frame_count - 1)))
+          ~w:camel_width ~h:camel_height
       in
       let dst_rect =
-        Sdl.Rect.create ~x:dst_x ~y:dst_y ~w:src_width ~h:src_height
+        Sdl.Rect.create ~x:camel_x ~y:camel_y ~w:camel_width_scaling
+          ~h:camel_height_scaling
       in
       Sdl.render_copy ~src:src_rect ~dst:dst_rect r texture |> Result.get_ok
   | None -> failwith ("Animation not found: " ^ anim_name)
 
 type players = t
 
-let bg_rect = Sdl.Rect.create ~x:0 ~y:0 ~w:width ~h:height
+let bg_rect = Sdl.Rect.create ~x:0 ~y:0 ~w:screen_width ~h:screen_height
 let level_init () = { player = Camel.init_camel; enemy = Enemy.init_enemy }
 
-let draw_level r bg_texture camel_texture hyena_texture src_width src_height =
-  let bg_rect = Sdl.Rect.create ~x:0 ~y:0 ~w:1920 ~h:1080 in
+let draw_level r bg_texture camel_texture hyena_texture =
+  let bg_rect = Sdl.Rect.create ~x:0 ~y:0 ~w:screen_width ~h:screen_height in
   Sdl.render_copy ~src:bg_rect ~dst:bg_rect r bg_texture |> Result.get_ok;
-  draw_camel 1 5 src_width src_height r camel_texture;
-  draw_hyena 0 0 src_width src_height r hyena_texture
+  (* draw_camel r camel_texture; *)
+  draw_hyena r hyena_texture
 
 let init_hp_bar x y curr_health max_health r : unit =
   let max_health = max_health * 3 in

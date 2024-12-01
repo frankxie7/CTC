@@ -1,5 +1,6 @@
 open Tsdl.Sdl
 open Tsdl_image
+open Const
 
 type m = {
   damage : int;
@@ -26,8 +27,8 @@ let get_hp t = t.hp
 let get_moves t = t.moves
 let update_hp t x = t.hp <- t.hp - x
 
-let draw_hyena row col src_width src_height r t =
-  let src = Rect.create ~x:row ~y:col ~w:src_width ~h:src_height in
+let draw_hyena r t =
+  let src = Rect.create ~x:0 ~y:0 ~w:camel_width ~h:camel_height in
   let dest = Rect.create ~x:1000 ~y:590 ~w:275 ~h:275 in
   match render_copy ~src ~dst:dest r t with
   | Ok () -> ()

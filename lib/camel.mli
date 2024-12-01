@@ -2,8 +2,6 @@ open Tsdl
 
 type t
 
-val camel_x : int
-val camel_y : int
 val create_camel : int -> int -> string -> t
 val init_camel : t
 val get_hp : t -> int
@@ -14,16 +12,6 @@ val update_energy : t -> int -> unit
 val update_status : t -> string -> unit
 
 val draw_camel :
-  int ->
-  (* row *)
-  int ->
-  (* col *)
-  int ->
-  (* row_space *)
-  int ->
-  (* col_space *)
-  Sdl.renderer ->
-  (* SDL renderer *)
-  Sdl.texture ->
-  (* SDL texture *)
-  unit
+  Sdl.renderer -> (* SDL renderer *)
+                  Sdl.texture -> (* SDL texture *)
+                                 unit

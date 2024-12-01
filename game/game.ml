@@ -70,8 +70,6 @@ type state =
 
 (*change this to ref MainMenu later*)
 let state = ref Active
-let width = 1512
-let height = 850
 let anim = ref "idle"
 
 let create_renderer window =
@@ -96,7 +94,8 @@ let init () =
   | _ ->
       ();
       let window =
-        create_window "Camel Caravan" ~w:width ~h:height Window.shown
+        create_window "Camel Caravan" ~w:Const.screen_width
+          ~h:Const.screen_height Window.shown
         |> Result.get_ok
       in
       let renderer =
@@ -126,11 +125,11 @@ let draw p r bg_texture camel_texture enemy_texture frame_count =
   render_clear r |> ignore;
 
   (* Draw background and static elements *)
-  Level.draw_level r bg_texture camel_texture enemy_texture 27 21;
+  Level.draw_level r bg_texture camel_texture enemy_texture;
 
   (* Draw animated camel based on the current animation state *)
-  Level.draw_animation r Animations.animation_table !anim frame_count 64 64 100
-    50 camel_texture;
+  Level.draw_animation r Animations.animation_table !anim frame_count
+    camel_texture;
 
   (* Draw player health or other UI elements *)
   Level.init_players_hp p r;

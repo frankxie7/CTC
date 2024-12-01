@@ -2,23 +2,20 @@ open Tsdl
 open Tsdl_image
 open Camel
 open Enemy
+open Const
 
 type t = {
   name : string;
   col : int;
-  frame_num : int;
+  total_frames : int;
 }
 
 type animation = t
 
 let get_name t = t.name
 let get_col t = t.col
-let get_frame_num t = t.frame_num
-
-(* distance between each col of frame *)
-let col_space = 3
-let row_space = 3
-let animate name col frame_num : t = { name; col; frame_num }
+let get_frame_num t = t.total_frames
+let animate name col total_frames : t = { name; col; total_frames }
 let spit = animate "spit" 3 6
 let idle = animate "idle" 1 1
 let defend = animate "defend" 2 9
@@ -36,7 +33,10 @@ let camel_take_damage row col src_width src_height r =
     Sdl.Rect.create ~x:row ~y:col ~w:(src_width + 100) ~h:(src_height + 100)
   in
   (* changes the camel size & pos: (x,y) = location, (w,h) = size scaling *)
-  let dest = Sdl.Rect.create ~x:camel_x ~y:camel_y ~w:350 ~h:300 in
+  let dest =
+    Sdl.Rect.create ~x:camel_x ~y:camel_y ~w:Const.camel_width_scaling
+      ~h:Const.camel_height_scaling
+  in
   let t =
     match Image.load_texture r "assets/camelcamel.png" with
     | Ok texture -> texture
