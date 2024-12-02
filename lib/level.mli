@@ -37,3 +37,4 @@ val draw_animation : Sdl.renderer -> string -> int -> Sdl.texture -> unit
     - [t]: The texture containing the sprite sheet. **)
 
 val init_players_hp : t -> Sdl.renderer -> unit
+val init_players_eng : t -> Sdl.renderer -> unit

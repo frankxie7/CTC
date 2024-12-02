@@ -128,7 +128,7 @@ let draw state renderer bg_texture camel_texture enemy_texture frame_count =
 
   (* Draw health bars and overlays *)
   Level.init_players_hp state renderer;
-
+  Level.init_players_eng state renderer;
   (* Present the rendered frame *)
   Sdl.render_present renderer
 
