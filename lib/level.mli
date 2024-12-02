@@ -6,6 +6,7 @@ type t = {
   mutable enemy : Enemy.t;
 }
 
+val init_player : Camel.t -> Enemy.t -> t
 val level_init : unit -> t
 
 val draw_level :
@@ -19,13 +20,7 @@ val draw_level :
   (* Hyena texture *)
   unit
 
-val draw_animation :
-  Sdl.renderer ->
-  (string, Animations.t) Hashtbl.t ->
-  string ->
-  int ->
-  Sdl.texture ->
-  unit
+val draw_animation : Sdl.renderer -> string -> int -> Sdl.texture -> unit
 (** [draw_animation r animation_table anim_name frame_count dst_x dst_y t] Draws
     the specified animation on the screen.
 

@@ -11,7 +11,5 @@ val update_hp : t -> int -> unit
 val update_energy : t -> int -> unit
 val update_status : t -> string -> unit
 
-val draw_camel :
-  Sdl.renderer -> (* SDL renderer *)
-                  Sdl.texture -> (* SDL texture *)
-                                 unit
+(* val draw_camel : Sdl.renderer -> (* SDL renderer *) Sdl.texture -> (* SDL
+   texture *) unit *)

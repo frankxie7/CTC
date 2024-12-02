@@ -14,36 +14,52 @@ type t = {
   mutable enemy : Enemy.t;
 }
 
-let draw_animation r animation_table anim_name frame_count texture =
-  (* TODO : check if frame_count is less than total_frame number *)
-  match Hashtbl.find_opt animation_table anim_name with
-  | Some animation ->
-      (* TODO : check if this works - col is not completely implemented yet but
-         it should either be (1) 1-2-3 representing the col of the animation or
-         the actual y coordinates of the animation. *)
-      let src_rect =
-        Sdl.Rect.create
-          ~x:(camel_init_height + frame_height)
-          ~y:(camel_init_width + (frame_width * (frame_count - 1)))
-          ~w:camel_width ~h:camel_height
-      in
-      let dst_rect =
-        Sdl.Rect.create ~x:camel_x ~y:camel_y ~w:camel_width_scaling
-          ~h:camel_height_scaling
-      in
-      Sdl.render_copy ~src:src_rect ~dst:dst_rect r texture |> Result.get_ok
-  | None -> failwith ("Animation not found: " ^ anim_name)
-
 type players = t
 
-let bg_rect = Sdl.Rect.create ~x:0 ~y:0 ~w:screen_width ~h:screen_height
-let level_init () = { player = Camel.init_camel; enemy = Enemy.init_enemy }
+let init_player (p : Camel.t) (e : Enemy.t) : players =
+  { player = p; enemy = e }
 
 let draw_level r bg_texture camel_texture hyena_texture =
   let bg_rect = Sdl.Rect.create ~x:0 ~y:0 ~w:screen_width ~h:screen_height in
   Sdl.render_copy ~src:bg_rect ~dst:bg_rect r bg_texture |> Result.get_ok;
   (* draw_camel r camel_texture; *)
   draw_hyena r hyena_texture
+
+let run_animation r t anim_name =
+  (* Get total frames for the animation *)
+  let total_frames = get_frame_num animation_table anim_name in
+
+  (* Iterate through each frame of the animation *)
+  for current_frame = 0 to total_frames - 1 do
+    (* Calculate source and destination rectangles for the frame *)
+    let col = get_col animation_table anim_name in
+    let src_rect =
+      Sdl.Rect.create
+        ~x:(camel_init_width + (frame_width * col))
+        ~y:(camel_init_height + (current_frame * frame_height))
+        ~w:frame_width ~h:frame_height
+    in
+    let dst_rect =
+      Sdl.Rect.create ~x:camel_x ~y:camel_y ~w:camel_width_scaling
+        ~h:camel_height_scaling
+    in
+
+    (* Render the frame *)
+    Sdl.render_clear r |> ignore;
+    Sdl.render_copy ~src:src_rect ~dst:dst_rect r t |> Result.get_ok;
+    Sdl.render_present r;
+
+    (* Wait for a short duration to control animation speed *)
+    Tsdl.Sdl.delay (Int32.of_int 100)
+    (* Adjust delay (in ms) to control playback speed *)
+  done
+
+let draw_animation r anim_name frame_count t = run_animation r t anim_name
+
+(* TODO : check if frame_count is less than total_frame number *)
+
+let bg_rect = Sdl.Rect.create ~x:0 ~y:0 ~w:screen_width ~h:screen_height
+let level_init () = { player = Camel.init_camel; enemy = Enemy.init_enemy }
 
 let init_hp_bar x y curr_health max_health r : unit =
   let max_health = max_health * 3 in

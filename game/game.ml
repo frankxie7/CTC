@@ -1,7 +1,7 @@
 open Tsdl_image
-open Tsdl.Sdl
+open Tsdl
 open Lib
-(* open Tsdl_ttf *)
+open Const
 
 (**[pos ch] handles when current health is less than 0. If it is negative then
    it equals 0, if it isn't then it returns itself.*)
@@ -64,18 +64,14 @@ let check_conditions input hand =
   | Failure _ -> failwith "Invalid input. Enter a valid number."
   | _ -> failwith "Unexpected error"
 
-type state =
-  (* | MainMenu -> (optional) add in main menu or paused state*)
-  | Active
-
-(*change this to ref MainMenu later*)
-let state = ref Active
 let anim = ref "idle"
 
 let create_renderer window =
-  match create_renderer ~index:(-1) ~flags:Renderer.presentvsync window with
+  match
+    Sdl.create_renderer ~index:(-1) ~flags:Sdl.Renderer.presentvsync window
+  with
   | Ok r -> r
-  | Error e -> failwith ("Unable to create renderer: " ^ get_error ())
+  | Error e -> failwith ("Unable to create renderer: " ^ Sdl.get_error ())
 
 let load_texture renderer path =
   match Image.load_texture renderer path with
@@ -85,7 +81,7 @@ let load_texture renderer path =
 (**[init] initializes window, renderer, background texture, camel texture*)
 let init () =
   begin
-    match init Init.everything with
+    match Sdl.init Sdl.Init.everything with
     | Ok () -> ()
     | Error (`Msg e) -> failwith ("Unable to initialize SDL: " ^ e)
   end;
@@ -94,8 +90,8 @@ let init () =
   | _ ->
       ();
       let window =
-        create_window "Camel Caravan" ~w:Const.screen_width
-          ~h:Const.screen_height Window.shown
+        Sdl.create_window "Camel Caravan" ~w:Const.screen_width
+          ~h:Const.screen_height Sdl.Window.shown
         |> Result.get_ok
       in
       let renderer =
@@ -120,25 +116,48 @@ let init () =
       in
       (renderer, (background_texture, camel_texture, enemy_texture))
 
-let draw p r bg_texture camel_texture enemy_texture frame_count =
+let draw state renderer bg_texture camel_texture enemy_texture frame_count =
   (* Clear the renderer *)
-  render_clear r |> ignore;
+  Sdl.render_clear renderer |> ignore;
 
-  (* Draw background and static elements *)
-  Level.draw_level r bg_texture camel_texture enemy_texture;
+  (* Draw the background, enemy, and other static elements *)
+  Level.draw_level renderer bg_texture camel_texture enemy_texture;
 
-  (* Draw animated camel based on the current animation state *)
-  Level.draw_animation r Animations.animation_table !anim frame_count
-    camel_texture;
+  (* Draw the current animation *)
+  Level.draw_animation renderer !anim frame_count camel_texture;
 
-  (* Draw player health or other UI elements *)
-  Level.init_players_hp p r;
+  (* Draw health bars and overlays *)
+  Level.init_players_hp state renderer;
 
-  (* Present the updated frame *)
-  render_present r
+  (* Present the rendered frame *)
+  Sdl.render_present renderer
+
+let run_animation renderer texture anim_name =
+  let total_frames =
+    Animations.get_frame_num Animations.animation_table anim_name
+  in
+  for current_frame = 0 to total_frames - 1 do
+    let col = Animations.get_col Animations.animation_table anim_name in
+    let src_rect =
+      Sdl.Rect.create
+        ~x:(camel_init_width + (frame_width * col))
+        ~y:(camel_init_height + (current_frame * frame_height))
+        ~w:frame_width ~h:frame_height
+    in
+    let dst_rect =
+      Sdl.Rect.create ~x:camel_x ~y:camel_y ~w:camel_width_scaling
+        ~h:camel_height_scaling
+    in
+    Sdl.render_clear renderer |> ignore;
+    Sdl.render_copy ~src:src_rect ~dst:dst_rect renderer texture
+    |> Result.get_ok;
+    Sdl.render_present renderer;
+    Tsdl.Sdl.delay (Int32.of_int 100)
+    (* Adjust speed as needed *)
+  done
 
 let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
-    (deck : Lib.Card.t Lib.Deck.t) =
+    (deck : Lib.Card.t Lib.Deck.t) renderer camel_texture =
   if Enemy.get_hp state.enemy <= 0 then (
     print_endline "You defeated the hyena! Game Over.";
     failwith "Game Over")
@@ -167,11 +186,12 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
         let index = check_conditions input hand in
         let card, updated_hand = play_card hand index in
         anim := Lib.Card.get_name card;
+        print_endline ("Playing animation: " ^ !anim);
 
-        (* Update animation state *)
+        run_animation renderer camel_texture !anim;
+
         let dmg = Lib.Card.get_dmg card in
         let def = Lib.Card.get_defend card in
-
         let enemy_attack =
           match Enemy.get_moves state.enemy with
           | [] -> raise (Failure "Enemy has no moves")
@@ -194,35 +214,20 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
         print_endline msg;
         (state, hand, deck))
 
-let run () : unit =
+let run () =
   let renderer, (bg_texture, camel_texture, enemy_texture) = init () in
 
-  let rec check_quit () =
-    let event = Event.create () in
-    if poll_event (Some event) then
-      match Event.get event Event.typ with
-      | t when t = Event.quit -> true
-      | t when t = Event.key_down ->
-          Event.get event Event.keyboard_keycode = K.escape
-      | _ -> false
-    else false
+  let rec main_loop (state : Level.t) hand deck frame_count =
+    draw state renderer bg_texture camel_texture enemy_texture frame_count;
+    let updated_state, updated_hand, updated_deck =
+      game state hand deck renderer camel_texture
+    in
+    main_loop updated_state updated_hand updated_deck (frame_count + 1)
   in
-
-  let rec main_loop state hand deck frame_count =
-    if not (check_quit ()) then (
-      draw state renderer bg_texture camel_texture enemy_texture frame_count;
-      let updated_state, updated_hand, updated_deck = game state hand deck in
-      main_loop updated_state updated_hand updated_deck (frame_count + 1))
-    else log "Quitting"
-  in
-
-  let players : Level.t =
-    { player = Camel.init_camel; enemy = Enemy.init_enemy }
-  in
+  let initial_state = Level.init_player Camel.init_camel Enemy.init_enemy in
   let full_deck = List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty in
   let shuffled_deck = Lib.Deck.shuffle full_deck in
   let hand, deck = Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty in
-  main_loop players hand deck 0;
-  quit ()
+  main_loop initial_state hand deck 0
 
 let main () = run ()

@@ -28,7 +28,7 @@ let get_moves t = t.moves
 let update_hp t x = t.hp <- t.hp - x
 
 let draw_hyena r t =
-  let src = Rect.create ~x:0 ~y:0 ~w:camel_width ~h:camel_height in
+  let src = Rect.create ~x:0 ~y:0 ~w:frame_width ~h:frame_height in
   let dest = Rect.create ~x:1000 ~y:590 ~w:275 ~h:275 in
   match render_copy ~src ~dst:dest r t with
   | Ok () -> ()
