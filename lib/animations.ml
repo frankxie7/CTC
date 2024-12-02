@@ -12,6 +12,10 @@ type t = {
 
 type animation = t
 
+let init_anim = ref "idle"
+let set_anim (a : string ref) (x : string) = a := x
+let get_anim a = !a
+
 let rec lookup k = function
   | [] -> failwith "Error: Not found"
   | (k', v) :: t -> if k = k' then v else lookup k t
@@ -31,8 +35,8 @@ let get_frame_num t k =
 let animate name col total_frames : t = { name; col; total_frames }
 let spit = animate "spit" 3 6
 let idle = animate "idle" 1 1
-let defend = animate "defend" 2 9
-let stomp = animate "stomp" 1 8
+let defend = animate "defend" 2 11
+let stomp = animate "stomp" 1 10
 
 let animation_table =
   [ ("spit", spit); ("idle", idle); ("defend", defend); ("stomp", stomp) ]

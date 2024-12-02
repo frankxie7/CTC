@@ -64,8 +64,6 @@ let check_conditions input hand =
   | Failure _ -> failwith "Invalid input. Enter a valid number."
   | _ -> failwith "Unexpected error"
 
-let anim = ref "idle"
-
 let create_renderer window =
   match
     Sdl.create_renderer ~index:(-1) ~flags:Sdl.Renderer.presentvsync window
@@ -85,7 +83,8 @@ let init () =
     | Ok () -> ()
     | Error (`Msg e) -> failwith ("Unable to initialize SDL: " ^ e)
   end;
-
+  let anim = Animations.init_anim in
+  Animations.set_anim anim "idle";
   match Image.init Image.Init.png with
   | _ ->
       ();
@@ -114,50 +113,22 @@ let init () =
         | Ok texture -> texture
         | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
       in
-      (renderer, (background_texture, camel_texture, enemy_texture))
+      (renderer, anim, (background_texture, camel_texture, enemy_texture))
 
-let draw state renderer bg_texture camel_texture enemy_texture frame_count =
-  (* Clear the renderer *)
+let draw state renderer bg_texture camel_texture enemy_texture anim =
   Sdl.render_clear renderer |> ignore;
 
-  (* Draw the background, enemy, and other static elements *)
   Level.draw_level renderer bg_texture camel_texture enemy_texture;
 
-  (* Draw the current animation *)
-  Level.draw_animation renderer !anim frame_count camel_texture;
+  Level.draw_animation state renderer bg_texture camel_texture enemy_texture
+    anim;
 
-  (* Draw health bars and overlays *)
   Level.init_players_hp state renderer;
-  Level.init_players_eng state renderer;
-  (* Present the rendered frame *)
   Sdl.render_present renderer
 
-let run_animation renderer texture anim_name =
-  let total_frames =
-    Animations.get_frame_num Animations.animation_table anim_name
-  in
-  for current_frame = 0 to total_frames - 1 do
-    let col = Animations.get_col Animations.animation_table anim_name in
-    let src_rect =
-      Sdl.Rect.create
-        ~x:(camel_init_width + (frame_width * col))
-        ~y:(camel_init_height + (current_frame * frame_height))
-        ~w:frame_width ~h:frame_height
-    in
-    let dst_rect =
-      Sdl.Rect.create ~x:camel_x ~y:camel_y ~w:camel_width_scaling
-        ~h:camel_height_scaling
-    in
-    Sdl.render_clear renderer |> ignore;
-    Sdl.render_copy ~src:src_rect ~dst:dst_rect renderer texture
-    |> Result.get_ok;
-    Sdl.render_present renderer;
-    Tsdl.Sdl.delay (Int32.of_int 100)
-    (* Adjust speed as needed *)
-  done
-
 let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
-    (deck : Lib.Card.t Lib.Deck.t) renderer camel_texture =
+    (deck : Lib.Card.t Lib.Deck.t) renderer camel_texture bg_texture
+    enemy_texture anim =
   if Enemy.get_hp state.enemy <= 0 then (
     print_endline "You defeated the hyena! Game Over.";
     failwith "Game Over")
@@ -187,14 +158,13 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
       try
         let index = check_conditions input hand in
         let card, updated_hand = play_card hand index in
+
         let dmg = Lib.Card.get_dmg card in
         let def = Lib.Card.get_defend card in
         let cst = Lib.Card.get_cost card in
         if cst <= Camel.get_energy state.player then (
-          anim := Lib.Card.get_name card;
-          print_endline ("Playing animation: " ^ !anim);
-
-          run_animation renderer camel_texture !anim;
+          Animations.set_anim anim (Lib.Card.get_name card);
+          print_endline ("Playing animation: " ^ Animations.get_anim anim);
 
           let enemy_attack =
             match Enemy.get_moves state.enemy with
@@ -225,19 +195,19 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
         (state, hand, deck))
 
 let run () =
-  let renderer, (bg_texture, camel_texture, enemy_texture) = init () in
+  let renderer, anim, (bg_texture, camel_texture, enemy_texture) = init () in
 
-  let rec main_loop (state : Level.t) hand deck frame_count =
-    draw state renderer bg_texture camel_texture enemy_texture frame_count;
+  let rec main_loop (state : Level.t) hand deck =
+    draw state renderer bg_texture camel_texture enemy_texture anim;
     let updated_state, updated_hand, updated_deck =
-      game state hand deck renderer camel_texture
+      game state hand deck renderer camel_texture bg_texture enemy_texture anim
     in
-    main_loop updated_state updated_hand updated_deck (frame_count + 1)
+    main_loop updated_state updated_hand updated_deck
   in
   let initial_state = Level.init_player Camel.init_camel Enemy.init_enemy in
   let full_deck = List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty in
   let shuffled_deck = Lib.Deck.shuffle full_deck in
   let hand, deck = Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty in
-  main_loop initial_state hand deck 0
+  main_loop initial_state hand deck
 
 let main () = run ()

@@ -29,3 +29,9 @@ val camel_max_hp : int
 
 val enemy_max_hp : int
 (* enemy's max health *)
+
+val enemy_x : int
+(* enemy x location *)
+
+val enemy_y : int
+(* enemy y location*)

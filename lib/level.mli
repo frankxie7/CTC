@@ -20,21 +20,14 @@ val draw_level :
   (* Hyena texture *)
   unit
 
-val draw_animation : Sdl.renderer -> string -> int -> Sdl.texture -> unit
-(** [draw_animation r animation_table anim_name frame_count dst_x dst_y t] Draws
-    the specified animation on the screen.
-
-    - [r]: The SDL renderer used for rendering.
-    - [animation_table]: A hash table mapping animation names to their
-      definitions.
-    - [anim_name]: The name of the animation to draw.
-    - [frame_count]: The current frame count, used to determine the animation
-      frame to render.
-    - [dst_x]: The x-coordinate of the destination rectangle where the animation
-      will be drawn.
-    - [dst_y]: The y-coordinate of the destination rectangle where the animation
-      will be drawn.
-    - [t]: The texture containing the sprite sheet. **)
+val draw_animation :
+  t ->
+  Sdl.renderer ->
+  Sdl.texture ->
+  Sdl.texture ->
+  Sdl.texture ->
+  string ref ->
+  unit
 
 val init_players_hp : t -> Sdl.renderer -> unit
 val init_players_eng : t -> Sdl.renderer -> unit
