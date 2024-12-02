@@ -121,7 +121,7 @@ let draw state renderer bg_texture camel_texture enemy_texture anim =
   Level.draw_level renderer bg_texture camel_texture enemy_texture;
 
   Level.draw_animation state renderer bg_texture camel_texture enemy_texture
-    (Animations.get_anim anim);
+    anim;
 
   Level.init_players_hp state renderer;
   Sdl.render_present renderer

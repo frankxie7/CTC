@@ -26,7 +26,7 @@ val draw_animation :
   Sdl.texture ->
   Sdl.texture ->
   Sdl.texture ->
-  string ->
+  string ref ->
   unit
 
 val init_players_hp : t -> Sdl.renderer -> unit
