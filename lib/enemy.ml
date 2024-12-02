@@ -13,9 +13,6 @@ type t = {
   moves : m list;
 }
 
-let enemy_x = 1000
-let enemy_y = 590
-
 let create_move (dmg : int) (def : int) (eff : string) : m =
   { damage = dmg; defend = def; effect = eff }
 
@@ -28,8 +25,10 @@ let get_moves t = t.moves
 let update_hp t x = t.hp <- t.hp - x
 
 let draw_hyena r t =
-  let src = Rect.create ~x:0 ~y:0 ~w:frame_width ~h:frame_height in
-  let dest = Rect.create ~x:1000 ~y:590 ~w:275 ~h:275 in
+  let src =
+    Rect.create ~x:0 ~y:0 ~w:(frame_width - 10) ~h:(frame_height - 10)
+  in
+  let dest = Rect.create ~x:enemy_x ~y:enemy_y ~w:175 ~h:175 in
   match render_copy ~src ~dst:dest r t with
   | Ok () -> ()
   | Error (`Msg e) -> failwith ("Failed to draw hyena: " ^ e)
