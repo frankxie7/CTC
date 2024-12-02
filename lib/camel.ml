@@ -10,7 +10,7 @@ type t = {
 }
 
 let create_camel h e s : t = { hp = h; energy = e; status = s }
-let init_camel : t = { hp = 100; energy = 100; status = "None" }
+let init_camel : t = { hp = 100; energy = 3; status = "None" }
 let update_hp t x = t.hp <- t.hp - x
 let update_energy t x = t.energy <- t.energy - x
 let update_status t x = t.status <- x

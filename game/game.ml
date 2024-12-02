@@ -148,6 +148,8 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
         | [] -> raise (Failure "Enemy has no moves")
         | move :: _ -> move
       in
+      let max_energy = Camel.get_energy state.player - 3 in
+      Camel.update_energy state.player max_energy;
       Camel.update_hp state.player enemy_attack.damage;
       print_endline
         (Printf.sprintf "Enemy attacks! You take %d damage!" enemy_attack.damage);
@@ -156,31 +158,38 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
       try
         let index = check_conditions input hand in
         let card, updated_hand = play_card hand index in
-        Animations.set_anim anim (Lib.Card.get_name card);
-        print_endline ("Playing animation: " ^ Animations.get_anim anim);
 
-        (* Level.draw_animation renderer bg_texture camel_texture enemy_texture
-           !anim; *)
         let dmg = Lib.Card.get_dmg card in
         let def = Lib.Card.get_defend card in
-        let enemy_attack =
-          match Enemy.get_moves state.enemy with
-          | [] -> raise (Failure "Enemy has no moves")
-          | move :: _ -> move
-        in
+        let cst = Lib.Card.get_cost card in
+        if cst <= Camel.get_energy state.player then (
+          Animations.set_anim anim (Lib.Card.get_name card);
+          print_endline ("Playing animation: " ^ Animations.get_anim anim);
 
-        let total_damage_taken = max 0 (enemy_attack.damage - def) in
-        Camel.update_hp state.player total_damage_taken;
-        Enemy.update_hp state.enemy dmg;
+          let enemy_attack =
+            match Enemy.get_moves state.enemy with
+            | [] -> raise (Failure "Enemy has no moves")
+            | move :: _ -> move
+          in
 
-        print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg);
-        if total_damage_taken > 0 then
-          print_endline
-            (Printf.sprintf "You took %d damage after defending %d!"
-               total_damage_taken def)
-        else print_endline "Enemy's attack was blocked!";
+          let total_damage_taken = max 0 (enemy_attack.damage - def) in
+          Camel.update_hp state.player total_damage_taken;
+          Enemy.update_hp state.enemy dmg;
+          Camel.update_energy state.player cst;
 
-        (state, updated_hand, deck)
+          print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg);
+          if total_damage_taken > 0 then
+            print_endline
+              (Printf.sprintf "You took %d damage after defending %d!"
+                 total_damage_taken def)
+          else print_endline "Enemy's attack was blocked!";
+
+          (state, updated_hand, deck))
+        else
+          let _ =
+            print_endline "You don't have enough energy to play that card!!!"
+          in
+          (state, hand, deck)
       with Failure msg ->
         print_endline msg;
         (state, hand, deck))
