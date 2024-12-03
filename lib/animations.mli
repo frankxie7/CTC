@@ -29,9 +29,6 @@ val spit : animation
 val idle : animation
 val defend : animation
 val stomp : animation
-val init_anim : string ref
-val set_anim : string ref -> string -> unit
-val get_anim : string ref -> string
 
 (* val camel_take_damage : int -> int -> int -> int -> Sdl.renderer -> unit (**
    [camel_take_damage row col src_width src_height r] Handles the camel's

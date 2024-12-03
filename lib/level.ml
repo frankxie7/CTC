@@ -80,9 +80,9 @@ let draw_level r bg_texture camel_texture hyena_texture =
   (* draw_camel r camel_texture; *)
   draw_hyena r hyena_texture
 
-let draw_animation state renderer bg_texture camel_texture enemy_texture anim =
+let draw_animation state renderer bg_texture camel_texture enemy_texture =
   print_string "Drawing camel animation. \n";
-  let anim_name = Animations.get_anim anim in
+  let anim_name = Camel.get_animation state.player in
   let total_frames =
     Animations.get_frame_num Animations.animation_table anim_name
   in
@@ -109,4 +109,5 @@ let draw_animation state renderer bg_texture camel_texture enemy_texture anim =
     Sdl.render_present renderer;
     Tsdl.Sdl.delay (Int32.of_int 100)
   done;
-  Animations.set_anim anim "idle"
+  Camel.update_animation state.player "idle";
+  print_string ("I'm Here: " ^ Camel.get_animation state.player ^ "\n")

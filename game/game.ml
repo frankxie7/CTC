@@ -83,8 +83,6 @@ let init () =
     | Ok () -> ()
     | Error (`Msg e) -> failwith ("Unable to initialize SDL: " ^ e)
   end;
-  let anim = Animations.init_anim in
-  Animations.set_anim anim "idle";
   match Image.init Image.Init.png with
   | _ ->
       ();
@@ -113,21 +111,20 @@ let init () =
         | Ok texture -> texture
         | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
       in
-      (renderer, anim, (background_texture, camel_texture, enemy_texture))
+      (renderer, (background_texture, camel_texture, enemy_texture))
 
-let draw state renderer bg_texture camel_texture enemy_texture anim =
+let draw state renderer bg_texture camel_texture enemy_texture =
   Sdl.render_clear renderer |> ignore;
 
   Level.draw_level renderer bg_texture camel_texture enemy_texture;
 
-  Level.draw_animation state renderer bg_texture camel_texture enemy_texture
-    anim;
-  Level.init_bar state renderer;
+  Level.draw_animation state renderer bg_texture camel_texture enemy_texture;
+  (* Level.init_bar state renderer; *)
   Sdl.render_present renderer
 
 let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     (deck : Lib.Card.t Lib.Deck.t) renderer camel_texture bg_texture
-    enemy_texture anim =
+    enemy_texture =
   if Enemy.get_hp state.enemy <= 0 then (
     print_endline "You defeated the hyena! Game Over.";
     failwith "Game Over")
@@ -162,8 +159,9 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
         let def = Lib.Card.get_defend card in
         let cst = Lib.Card.get_cost card in
         if cst <= Camel.get_energy state.player then (
-          Animations.set_anim anim (Lib.Card.get_name card);
-          print_endline ("Playing animation: " ^ Animations.get_anim anim);
+          Camel.update_animation state.player (Lib.Card.get_name card);
+          print_endline
+            ("Playing animation: " ^ Camel.get_animation state.player);
 
           let enemy_attack =
             match Enemy.get_moves state.enemy with
@@ -194,12 +192,12 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
         (state, hand, deck))
 
 let run () =
-  let renderer, anim, (bg_texture, camel_texture, enemy_texture) = init () in
+  let renderer, (bg_texture, camel_texture, enemy_texture) = init () in
 
   let rec main_loop (state : Level.t) hand deck =
-    draw state renderer bg_texture camel_texture enemy_texture anim;
+    draw state renderer bg_texture camel_texture enemy_texture;
     let updated_state, updated_hand, updated_deck =
-      game state hand deck renderer camel_texture bg_texture enemy_texture anim
+      game state hand deck renderer camel_texture bg_texture enemy_texture
     in
     main_loop updated_state updated_hand updated_deck
   in

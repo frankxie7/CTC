@@ -21,12 +21,6 @@ val draw_level :
   unit
 
 val draw_animation :
-  t ->
-  Sdl.renderer ->
-  Sdl.texture ->
-  Sdl.texture ->
-  Sdl.texture ->
-  string ref ->
-  unit
+  t -> Sdl.renderer -> Sdl.texture -> Sdl.texture -> Sdl.texture -> unit
 
 val init_bar : t -> Sdl.renderer -> unit

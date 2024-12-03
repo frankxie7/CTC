@@ -6,17 +6,21 @@ open Const
 type t = {
   mutable hp : int;
   mutable energy : int;
-  mutable status : string; (* mutable animation : renderer; *)
+  mutable status : string;
+  mutable animation : string;
 }
 
-let create_camel h e s : t = { hp = h; energy = e; status = s }
-let init_camel : t = { hp = 100; energy = 3; status = "None" }
+let init_camel : t =
+  { hp = 100; energy = 3; status = "None"; animation = "idle" }
+
 let update_hp t x = t.hp <- t.hp - x
 let update_energy t x = t.energy <- t.energy - x
 let update_status t x = t.status <- x
+let update_animation t s = t.animation <- s
 let get_hp t = t.hp
 let get_energy t = t.energy
 let get_status t = t.status
+let get_animation t = t.animation
 
 (* let draw_camel r t = (* TODO : theres something to do here - we don't need to
    draw the camel if it is the idle animation, and row + frame_height

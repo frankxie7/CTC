@@ -12,10 +12,6 @@ type t = {
 
 type animation = t
 
-let init_anim = ref "idle"
-let set_anim (a : string ref) (x : string) = a := x
-let get_anim a = !a
-
 let rec lookup k = function
   | [] -> failwith "Error: Not found"
   | (k', v) :: t -> if k = k' then v else lookup k t
