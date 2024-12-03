@@ -33,7 +33,7 @@ let get_frame_num t k =
   x.total_frames
 
 let animate name col total_frames : t = { name; col; total_frames }
-let spit = animate "spit" 3 6
+let spit = animate "spit" 3 7
 let idle = animate "idle" 1 1
 let defend = animate "defend" 2 11
 let stomp = animate "stomp" 1 10
