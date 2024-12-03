@@ -122,8 +122,7 @@ let draw state renderer bg_texture camel_texture enemy_texture anim =
 
   Level.draw_animation state renderer bg_texture camel_texture enemy_texture
     anim;
-
-  Level.init_players_hp state renderer;
+  Level.init_bar state renderer;
   Sdl.render_present renderer
 
 let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)

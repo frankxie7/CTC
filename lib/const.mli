@@ -35,3 +35,5 @@ val enemy_x : int
 
 val enemy_y : int
 (* enemy y location*)
+
+val camel_max_energy : int

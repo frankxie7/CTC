@@ -42,37 +42,36 @@ let init_hp_bar x y curr_health max_health r : unit =
   Tsdl.Sdl.render_fill_rect r (Some curr_rect) |> ignore;
   Tsdl.Sdl.set_render_draw_color r 255 255 255 255 |> ignore
 
-let init_energy_bar x y curr_energy max_energy r : unit =
-  let max_energy = max_energy * 33 in
-  let curr_energy = curr_energy * 33 in
-  Tsdl.Sdl.set_render_draw_color r 0 255 0 0 |> ignore;
-  let border_rect =
-    Sdl.Rect.create ~x:(x - 4) ~y:(y - 4) ~w:(max_energy + 8) ~h:24
-  in
-  Tsdl.Sdl.render_fill_rect r (Some border_rect) |> ignore;
-  Tsdl.Sdl.set_render_draw_color r 255 255 255 0 |> ignore;
-  let max_rect = Sdl.Rect.create ~x ~y ~w:max_energy ~h:16 in
-  Tsdl.Sdl.render_fill_rect r (Some max_rect) |> ignore;
-  if curr_energy > 2 * max_energy / 3 then
-    Tsdl.Sdl.set_render_draw_color r 0 128 0 255 |> ignore
-  else if curr_energy > max_energy / 3 then
-    Tsdl.Sdl.set_render_draw_color r 255 255 0 255 |> ignore
-  else Tsdl.Sdl.set_render_draw_color r 255 0 0 255 |> ignore;
-  let curr_rect = Sdl.Rect.create ~x ~y ~w:curr_energy ~h:16 in
-  Tsdl.Sdl.render_fill_rect r (Some curr_rect) |> ignore;
-  Tsdl.Sdl.set_render_draw_color r 255 255 255 255 |> ignore
+let init_energy_bar (t : players) r : unit =
+  let x = camel_x + 20 in
+  let y = camel_y - 10 in
 
-let init_players_eng (t : players) r : unit =
-  init_energy_bar (camel_x + 60) (camel_y - 75) (Camel.get_hp t.player)
-    camel_max_hp r;
-  init_energy_bar (enemy_x + 45) (enemy_y - 45) (Enemy.get_hp t.enemy)
-    enemy_max_hp r
+  let max_length = camel_max_hp * 3 in
+  let scale = max_length / camel_max_energy in
+  let curr_energy = Camel.get_energy t.player in
 
-let init_players_hp (t : players) r : unit =
+  for z = 0 to camel_max_energy - 1 do
+    Tsdl.Sdl.set_render_draw_color r 0 0 0 0 |> ignore;
+    let energy_border =
+      Sdl.Rect.create ~x:(x + (z * scale) - 4) ~y ~w:(scale + 8) ~h:18
+    in
+    Tsdl.Sdl.render_fill_rect r (Some energy_border) |> ignore;
+
+    if z < curr_energy then Tsdl.Sdl.set_render_draw_color r 0 49 83 0 |> ignore
+    else Tsdl.Sdl.set_render_draw_color r 220 220 220 0 |> ignore;
+
+    let energy_bar =
+      Sdl.Rect.create ~x:(x + (z * scale)) ~y:(y + 4) ~w:scale ~h:10
+    in
+    Tsdl.Sdl.render_fill_rect r (Some energy_bar) |> ignore
+  done
+
+let init_bar (t : players) r : unit =
   init_hp_bar (camel_x + 20) (camel_y - 25) (Camel.get_hp t.player) camel_max_hp
     r;
   init_hp_bar (enemy_x + 15) (enemy_y - 15) (Enemy.get_hp t.enemy) enemy_max_hp
-    r
+    r;
+  init_energy_bar t r
 
 let draw_level r bg_texture camel_texture hyena_texture =
   print_string "Drawing background and enemy units.\n";
@@ -106,10 +105,8 @@ let draw_animation state renderer bg_texture camel_texture enemy_texture anim =
     in
     Sdl.render_copy ~src:src_rect ~dst:dst_rect renderer camel_texture
     |> Result.get_ok;
-    init_players_hp state renderer;
+    init_bar state renderer;
     Sdl.render_present renderer;
     Tsdl.Sdl.delay (Int32.of_int 100)
   done;
   Animations.set_anim anim "idle"
-
-(* TODO : check if frame_count is less than total_frame number *)

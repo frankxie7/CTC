@@ -29,5 +29,4 @@ val draw_animation :
   string ref ->
   unit
 
-val init_players_hp : t -> Sdl.renderer -> unit
-val init_players_eng : t -> Sdl.renderer -> unit
+val init_bar : t -> Sdl.renderer -> unit

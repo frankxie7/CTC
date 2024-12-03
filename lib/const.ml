@@ -10,5 +10,6 @@ let camel_height_scaling = 300
 let camel_width_scaling = 300
 let camel_max_hp = 100
 let enemy_max_hp = 50
+let camel_max_energy = 3
 let enemy_x = 1000
 let enemy_y = 600
