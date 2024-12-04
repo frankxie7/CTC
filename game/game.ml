@@ -124,10 +124,15 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     None)
   else (
     Lib.Deck.print (Lib.Deck.to_list hand);
-    print_endline "Play a card (type index) or type 'End' to end turn:";
+    print_endline
+      "Play a card (type index) or type 'End' to end turn: \n\
+       Enter 'q' to quit out of the game:";
 
     let input = read_line () in
-    if input = "End" then (
+    if input = "q" then (
+      print_endline "You have chosen to quit the game. Goodbye!";
+      None)
+    else if input = "End" then (
       let updated_hand, updated_deck = draw_one hand deck in
       print_endline "You drew a card!";
       let enemy_attack =
