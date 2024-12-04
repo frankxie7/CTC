@@ -107,7 +107,9 @@ let draw_animation state renderer bg_texture camel_texture enemy_texture =
     |> Result.get_ok;
     init_bar state renderer;
     Sdl.render_present renderer;
-    Tsdl.Sdl.delay (Int32.of_int 100)
+    let x = Sdl.wait_event_timeout None 500 in
+    if x then () else ()
   done;
+
   Camel.update_animation state.player "idle";
   print_string ("I'm Here: " ^ Camel.get_animation state.player ^ "\n")
