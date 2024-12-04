@@ -10,7 +10,7 @@ let pos ch = if ch < 0 then 0 else ch
 let camel1A_deck =
   [
     Lib.Card.basicA;
-    Lib.Card.basicA;
+    Lib.Card.strongA;
     Lib.Card.basicA;
     Lib.Card.basicA;
     Lib.Card.basicA;
@@ -102,7 +102,7 @@ let init () =
         | Error (`Msg e) -> failwith ("Unable to load background texture: " ^ e)
       in
       let camel_texture =
-        match Image.load_texture renderer "assets/camelcamel.png" with
+        match Image.load_texture renderer "assets/camel.png" with
         | Ok texture -> texture
         | Error (`Msg e) -> failwith ("Unable to load camel texture: " ^ e)
       in

@@ -29,13 +29,20 @@ let get_frame_num t k =
   x.total_frames
 
 let animate name col total_frames : t = { name; col; total_frames }
-let spit = animate "spit" 3 7
+let spit = animate "spit" 2 17
 let idle = animate "idle" 1 1
-let defend = animate "defend" 2 11
-let stomp = animate "stomp" 1 10
+let defend = animate "defend" 3 13
+let stomp = animate "stomp" 1 15
+let throw = animate "throw" 4 17
 
 let animation_table =
-  [ ("spit", spit); ("idle", idle); ("defend", defend); ("stomp", stomp) ]
+  [
+    ("spit", spit);
+    ("idle", idle);
+    ("defend", defend);
+    ("stomp", stomp);
+    ("throw", throw);
+  ]
 
 (* let camel_take_damage row col src_width src_height r = let src =
    Sdl.Rect.create ~x:row ~y:col ~w:(src_width + 100) ~h:(src_height + 100) in

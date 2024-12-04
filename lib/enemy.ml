@@ -26,7 +26,7 @@ let update_hp t x = t.hp <- t.hp - x
 
 let draw_hyena r t =
   let src =
-    Rect.create ~x:0 ~y:0 ~w:(frame_width - 10) ~h:(frame_height - 10)
+    Rect.create ~x:0 ~y:0 ~w:(enemy_width - 10) ~h:(frame_height - 10)
   in
   let dest = Rect.create ~x:enemy_x ~y:enemy_y ~w:175 ~h:175 in
   match render_copy ~src ~dst:dest r t with

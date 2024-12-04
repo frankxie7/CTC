@@ -14,6 +14,9 @@ let print_card card =
 
 let basicA = { name = "spit"; cost = 1; dmg = 10; defend = 0; effect = "None" }
 
+let strongA =
+  { name = "throw"; cost = 1; dmg = 20; defend = 0; effect = "None" }
+
 let basicD =
   { name = "defend"; cost = 1; dmg = 0; defend = 10; effect = "None" }
 
