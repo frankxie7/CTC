@@ -7,6 +7,7 @@ val get_hp : t -> int
 val get_energy : t -> int
 val get_status : t -> string
 val get_animation : t -> string
+val update_def : t -> int -> unit
 val update_hp : t -> int -> unit
 val update_energy : t -> int -> unit
 val update_status : t -> string -> unit

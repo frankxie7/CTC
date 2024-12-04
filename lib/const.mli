@@ -13,7 +13,8 @@ val camel_y : int
 val frame_height : int
 (* height of each frame on the sprite sheet*)
 
-val frame_width : int
+val enemy_width : int
+val camel_width : int
 (* width of each frame on the sprite sheet*)
 
 val camel_height_scaling : int

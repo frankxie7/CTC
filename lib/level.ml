@@ -74,30 +74,23 @@ let init_bar (t : players) r : unit =
   init_energy_bar t r
 
 let draw_level r bg_texture camel_texture hyena_texture =
-  print_string "Drawing background and enemy units.\n";
   let bg_rect = Sdl.Rect.create ~x:0 ~y:0 ~w:screen_width ~h:screen_height in
   Sdl.render_copy ~src:bg_rect ~dst:bg_rect r bg_texture |> Result.get_ok;
-  (* draw_camel r camel_texture; *)
   draw_hyena r hyena_texture
 
 let draw_animation state renderer bg_texture camel_texture enemy_texture =
-  print_string "Drawing camel animation. \n";
   let anim_name = Camel.get_animation state.player in
   let total_frames =
     Animations.get_frame_num Animations.animation_table anim_name
   in
-  print_string
-    ("Animation has " ^ string_of_int total_frames ^ " frames on column "
-    ^ string_of_int (Animations.get_col Animations.animation_table anim_name - 1)
-    ^ ". \n");
   for current_frame = 0 to total_frames - 1 do
     draw_level renderer bg_texture camel_texture enemy_texture;
     let col = Animations.get_col Animations.animation_table anim_name in
     let src_rect =
       Sdl.Rect.create
-        ~x:(camel_init_width + (frame_width * (col - 1)))
+        ~x:(camel_init_width + (camel_width * (col - 1)))
         ~y:(camel_init_height + (current_frame * frame_height))
-        ~w:frame_width ~h:frame_height
+        ~w:camel_width ~h:frame_height
     in
     let dst_rect =
       Sdl.Rect.create ~x:camel_x ~y:camel_y ~w:camel_width_scaling
@@ -107,8 +100,9 @@ let draw_animation state renderer bg_texture camel_texture enemy_texture =
     |> Result.get_ok;
     init_bar state renderer;
     Sdl.render_present renderer;
-    let x = Sdl.wait_event_timeout None 500 in
-    if x then () else ()
+    let x = Sdl.wait_event_timeout None 0 in
+    if x then () else ();
+    Sdl.delay (Int32.of_int 100)
   done;
-  Camel.update_animation state.player "idle";
-  print_string ("I'm Here: " ^ Camel.get_animation state.player ^ "\n")
+
+  Camel.update_animation state.player "idle"
