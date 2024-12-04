@@ -1,4 +1,6 @@
 (library
  (name lib)
  (public_name lib)
- (libraries tsdl tsdl-image))
+ (libraries tsdl tsdl-image)
+  (instrumentation
+  (backend bisect_ppx)))
