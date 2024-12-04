@@ -3,6 +3,7 @@ open Tsdl
 type t
 
 val init_camel : t
+val get_def : t -> int
 val get_hp : t -> int
 val get_energy : t -> int
 val get_status : t -> string

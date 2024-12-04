@@ -19,6 +19,7 @@ let update_hp t x = t.hp <- t.hp - x
 let update_energy t x = t.energy <- t.energy - x
 let update_status t x = t.status <- x
 let update_animation t s = t.animation <- s
+let get_def t = t.defense
 let get_hp t = t.hp
 let get_energy t = t.energy
 let get_status t = t.status
