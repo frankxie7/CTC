@@ -118,10 +118,10 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     enemy_texture =
   if Enemy.get_hp state.enemy <= 0 then (
     print_endline "You defeated the hyena! Game Over.";
-    failwith "Game Over")
+    None)
   else if Camel.get_hp state.player <= 0 then (
     print_endline "You have been defeated! Game Over.";
-    failwith "Game Over")
+    None)
   else (
     Lib.Deck.print (Lib.Deck.to_list hand);
     print_endline "Play a card (type index) or type 'End' to end turn:";
@@ -148,7 +148,7 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
       Camel.update_hp state.player enemy_attack.damage;
       print_endline
         (Printf.sprintf "Enemy attacks! You take %d damage!" enemy_attack.damage);
-      (state, updated_hand, updated_deck))
+      Some (state, updated_hand, updated_deck))
     else
       try
         let index = check_conditions input hand in
@@ -168,26 +168,29 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
 
           print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg);
 
-          (state, updated_hand, deck))
+          Some (state, updated_hand, deck))
         else
           let _ =
             print_endline "You don't have enough energy to play that card!!!"
           in
-          (state, hand, deck)
+          Some (state, hand, deck)
       with Failure msg ->
         print_endline msg;
-        (state, hand, deck))
+        Some (state, hand, deck))
 
 let run () =
   let renderer, (bg_texture, camel_texture, enemy_texture) = init () in
 
   let rec main_loop (state : Level.t) hand deck =
     draw state renderer bg_texture camel_texture enemy_texture;
-    let updated_state, updated_hand, updated_deck =
+    match
       game state hand deck renderer camel_texture bg_texture enemy_texture
-    in
-    main_loop updated_state updated_hand updated_deck
+    with
+    | None -> print_endline "Thank you for playing!"
+    | Some (updated_state, updated_hand, updated_deck) ->
+        main_loop updated_state updated_hand updated_deck
   in
+
   let initial_state = Level.init_player Camel.init_camel Enemy.init_enemy in
   let full_deck = List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty in
   let shuffled_deck = Lib.Deck.shuffle full_deck in
