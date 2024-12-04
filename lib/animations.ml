@@ -34,6 +34,7 @@ let idle = animate "idle" 1 1
 let defend = animate "defend" 3 13
 let stomp = animate "stomp" 1 15
 let throw = animate "throw" 4 17
+let tackle = animate "tackle" 5 1
 
 let animation_table =
   [
@@ -42,6 +43,7 @@ let animation_table =
     ("defend", defend);
     ("stomp", stomp);
     ("throw", throw);
+    ("tackle", tackle);
   ]
 
 (* let camel_take_damage row col src_width src_height r = let src =

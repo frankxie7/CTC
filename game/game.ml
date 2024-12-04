@@ -9,25 +9,25 @@ let pos ch = if ch < 0 then 0 else ch
 
 let camel1A_deck =
   [
-    Lib.Card.basicA;
-    Lib.Card.strongA;
-    Lib.Card.basicA;
-    Lib.Card.basicA;
-    Lib.Card.basicA;
-    Lib.Card.basicD;
-    Lib.Card.basicD;
-    Lib.Card.basicD;
-    Lib.Card.basicD;
-    Lib.Card.basicAD;
+    Lib.Card.tackle;
+    Lib.Card.throw;
+    Lib.Card.tackle;
+    Lib.Card.defend;
+    Lib.Card.spit;
+    Lib.Card.defend;
+    Lib.Card.tackle;
+    Lib.Card.stomp;
+    Lib.Card.tackle;
+    Lib.Card.defend;
   ]
 
 let camel1A_hand =
   [
-    Lib.Card.basicA;
-    Lib.Card.basicA;
-    Lib.Card.basicD;
-    Lib.Card.basicD;
-    Lib.Card.basicAD;
+    Lib.Card.throw;
+    Lib.Card.spit;
+    Lib.Card.stomp;
+    Lib.Card.defend;
+    Lib.Card.tackle;
   ]
 
 let hyena_moves =
@@ -119,7 +119,6 @@ let draw state renderer bg_texture camel_texture enemy_texture =
   Level.draw_level renderer bg_texture camel_texture enemy_texture;
 
   Level.draw_animation state renderer bg_texture camel_texture enemy_texture;
-  (* Level.init_bar state renderer; *)
   Sdl.render_present renderer
 
 let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)

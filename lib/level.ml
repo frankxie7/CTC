@@ -76,7 +76,6 @@ let init_bar (t : players) r : unit =
 let draw_level r bg_texture camel_texture hyena_texture =
   let bg_rect = Sdl.Rect.create ~x:0 ~y:0 ~w:screen_width ~h:screen_height in
   Sdl.render_copy ~src:bg_rect ~dst:bg_rect r bg_texture |> Result.get_ok;
-  (* draw_camel r camel_texture; *)
   draw_hyena r hyena_texture
 
 let draw_animation state renderer bg_texture camel_texture enemy_texture =
@@ -101,7 +100,7 @@ let draw_animation state renderer bg_texture camel_texture enemy_texture =
     |> Result.get_ok;
     init_bar state renderer;
     Sdl.render_present renderer;
-    let x = Sdl.wait_event_timeout None 500 in
-    if x then () else ()
+    (* let x = Sdl.wait_event_timeout None 500 in if x then () else () *)
+    Sdl.delay (Int32.of_int 100)
   done;
   Camel.update_animation state.player "idle"
