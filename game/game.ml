@@ -205,6 +205,7 @@ let run () =
   let full_deck = List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty in
   let shuffled_deck = Lib.Deck.shuffle full_deck in
   let hand, deck = Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty in
+  draw initial_state renderer bg_texture camel_texture enemy_texture;
   main_loop initial_state hand deck
 
 let main () = run ()
