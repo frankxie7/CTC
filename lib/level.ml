@@ -5,7 +5,7 @@ open Enemy
 open Animations
 open Const
 
-let init_anim = idle
+(* let init_anim = idle *)
 let init_y = 7
 let calculate_frame frame_count total_frames = frame_count mod total_frames
 

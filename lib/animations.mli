@@ -25,11 +25,6 @@ val get_frame_num : (string * animation) list -> string -> int
 val animate : string -> int -> int -> t
 (** [animate name col frame_num] creates a new animation. *)
 
-val spit : animation
-val idle : animation
-val defend : animation
-val stomp : animation
-val tackle : animation
 
 (* val camel_take_damage : int -> int -> int -> int -> Sdl.renderer -> unit (**
    [camel_take_damage row col src_width src_height r] Handles the camel's

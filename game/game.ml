@@ -9,16 +9,17 @@ let pos ch = if ch < 0 then 0 else ch
 
 let camel1A_deck =
   [
+    Lib.Card.tackle;
+    Lib.Card.throw;
+    Lib.Card.tackle;
+    Lib.Card.defend;
     Lib.Card.spit;
-    Lib.Card.tackle;
-    Lib.Card.tackle;
-    Lib.Card.tackle;
     Lib.Card.defend;
-    Lib.Card.defend;
+    Lib.Card.tackle;
     Lib.Card.stomp;
     Lib.Card.tackle;
-    Lib.Card.throw;
-    Lib.Card.throw;
+    Lib.Card.defend;
+    Lib.Card.tackle;
   ]
 
 let hyena_moves =
@@ -106,11 +107,8 @@ let init () =
 
 let draw state renderer bg_texture camel_texture enemy_texture =
   Sdl.render_clear renderer |> ignore;
-
   Level.draw_level renderer bg_texture camel_texture enemy_texture;
-
   Level.draw_animation state renderer bg_texture camel_texture enemy_texture;
-  (* Level.init_bar state renderer; *)
   Sdl.render_present renderer
 
 let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
@@ -118,21 +116,16 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     enemy_texture =
   if Enemy.get_hp state.enemy <= 0 then (
     print_endline "You defeated the hyena! Game Over.";
-    None)
+    failwith "Game Over")
   else if Camel.get_hp state.player <= 0 then (
     print_endline "You have been defeated! Game Over.";
-    None)
+    failwith "Game Over")
   else (
     Lib.Deck.print (Lib.Deck.to_list hand);
-    print_endline
-      "Play a card (type index) or type 'End' to end turn: \n\
-       Enter 'q' to quit out of the game:";
+    print_endline "Play a card (type index) or type 'End' to end turn:";
 
     let input = read_line () in
-    if input = "q" then (
-      print_endline "You have chosen to quit the game. Goodbye!";
-      None)
-    else if input = "End" then (
+    if input = "End" then (
       let updated_hand, updated_deck = draw_one hand deck in
       print_endline "You drew a card!";
       let enemy_attack =
@@ -141,19 +134,11 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
         | move :: _ -> move
       in
       let max_energy = Camel.get_energy state.player - 3 in
-      let max_defense = Camel.get_def state.player in
-      let total_damage_taken = max 0 (enemy_attack.damage - max_defense) in
-      if total_damage_taken > 0 then
-        print_endline
-          (Printf.sprintf "You took %d damage after defending %d!"
-             total_damage_taken max_defense)
-      else print_endline "Enemy's attack was blocked!";
-      Camel.update_def state.player (0 - max_defense);
       Camel.update_energy state.player max_energy;
       Camel.update_hp state.player enemy_attack.damage;
       print_endline
         (Printf.sprintf "Enemy attacks! You take %d damage!" enemy_attack.damage);
-      Some (state, updated_hand, updated_deck))
+      (state, updated_hand, updated_deck))
     else
       try
         let index = check_conditions input hand in
@@ -167,35 +152,44 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
           print_endline
             ("Playing animation: " ^ Camel.get_animation state.player);
 
-          Camel.update_def state.player def;
+          let enemy_attack =
+            match Enemy.get_moves state.enemy with
+            | [] -> raise (Failure "Enemy has no moves")
+            | move :: _ -> move
+          in
+
+          let total_damage_taken = max 0 (enemy_attack.damage - def) in
+          Camel.update_hp state.player total_damage_taken;
           Enemy.update_hp state.enemy dmg;
           Camel.update_energy state.player cst;
 
           print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg);
+          if total_damage_taken > 0 then
+            print_endline
+              (Printf.sprintf "You took %d damage after defending %d!"
+                 total_damage_taken def)
+          else print_endline "Enemy's attack was blocked!";
 
-          Some (state, updated_hand, deck))
+          (state, updated_hand, deck))
         else
           let _ =
             print_endline "You don't have enough energy to play that card!!!"
           in
-          Some (state, hand, deck)
+          (state, hand, deck)
       with Failure msg ->
         print_endline msg;
-        Some (state, hand, deck))
+        (state, hand, deck))
 
 let run () =
   let renderer, (bg_texture, camel_texture, enemy_texture) = init () in
 
   let rec main_loop (state : Level.t) hand deck =
     draw state renderer bg_texture camel_texture enemy_texture;
-    match
+    let updated_state, updated_hand, updated_deck =
       game state hand deck renderer camel_texture bg_texture enemy_texture
-    with
-    | None -> print_endline "Thank you for playing!"
-    | Some (updated_state, updated_hand, updated_deck) ->
-        main_loop updated_state updated_hand updated_deck
+    in
+    main_loop updated_state updated_hand updated_deck
   in
-
   let initial_state = Level.init_player Camel.init_camel Enemy.init_enemy in
   let full_deck = List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty in
   let shuffled_deck = Lib.Deck.shuffle full_deck in
