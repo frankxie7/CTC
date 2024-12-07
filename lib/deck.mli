@@ -34,5 +34,7 @@ val shuffle : 'a t -> 'a t
 
 val draw : int -> 'a t -> 'a t -> 'a t * 'a t
 
+val deck_to_string : Card.t list -> string list
+
 val print : Card.t list -> unit
   (**[print d] prints the deck representation for list.*)

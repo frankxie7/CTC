@@ -48,9 +48,9 @@ let rec draw n deck hand =
     let card = peek deck in
     draw (n - 1) (pop deck) (push card hand)
 
-let print (deck_lst : Card.t list) =
-  List.iteri
-    (fun i x ->
-      Printf.printf "%d -> " (i + 1);
-      Card.print_card x)
+let deck_to_string (deck_lst : Card.t list) : string list =
+  List.mapi
+    (fun i x -> Printf.sprintf "%d -> %s" (i + 1) (Card.card_to_string x))
     deck_lst
+
+let print deck_lst = deck_to_string deck_lst |> List.iter print_endline

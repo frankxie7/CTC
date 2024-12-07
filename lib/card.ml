@@ -6,12 +6,12 @@ type t = {
   effect : string;
 }
 
-let print_card card =
-  print_endline
-    (card.name ^ " | cost: " ^ string_of_int card.cost ^ " | dmg : "
-   ^ string_of_int card.dmg ^ " | defend : " ^ string_of_int card.defend
-   ^ " | effect : " ^ card.effect)
+let card_to_string card =
+  card.name ^ " | cost: " ^ string_of_int card.cost ^ " | dmg : "
+  ^ string_of_int card.dmg ^ " | defend : " ^ string_of_int card.defend
+  ^ " | effect : " ^ card.effect
 
+let print_card card = print_endline (card_to_string card)
 let spit = { name = "spit"; cost = 1; dmg = 10; defend = 0; effect = "Weaken" }
 let throw = { name = "throw"; cost = 1; dmg = 20; defend = 0; effect = "Bleed" }
 

@@ -1,5 +1,6 @@
 type t
 
+val card_to_string : t -> string
 val print_card : t -> unit
 val spit : t
 val defend : t
