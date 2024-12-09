@@ -33,8 +33,8 @@ let spit = animate "spit" 2 17
 let idle = animate "idle" 1 1
 let defend = animate "defend" 3 13
 let stomp = animate "stomp" 1 15
-let throw = animate "throw" 4 17
-let tackle = animate "tackle" 5 6
+let throw = animate "throw" 4 19
+let tackle = animate "tackle" 5 10
 (* let damaged = animate "damaged" 6 1 *)
 
 let animation_table =
