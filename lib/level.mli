@@ -9,18 +9,15 @@ type t = {
 val init_player : Camel.t -> Enemy.t -> t
 val level_init : unit -> t
 
-val draw_level :
-  Sdl.renderer ->
-  (* SDL renderer *)
-  Sdl.texture ->
-  (* Background texture *)
-  Sdl.texture ->
-  (* Camel texture *)
-  Sdl.texture ->
-  (* Hyena texture *)
-  unit
+val draw_background :
+  Sdl.renderer -> (* SDL renderer *)
+                  Sdl.texture -> (* Background texture *)
+                                 unit
 
-val draw_animation :
+val draw_camel_animation :
+  t -> Sdl.renderer -> Sdl.texture -> Sdl.texture -> Sdl.texture -> unit
+
+val draw_enemy_animation :
   t -> Sdl.renderer -> Sdl.texture -> Sdl.texture -> Sdl.texture -> unit
 
 val init_bar : t -> Sdl.renderer -> unit

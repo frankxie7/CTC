@@ -3,32 +3,45 @@ open Tsdl_image
 open Const
 
 type m = {
+  name : string;
   damage : int;
   defend : int;
   effect : string;
 }
 
+let get_name m = m.name
+let get_dmg m = m.damage
+
+let create_move (n : string) (dmg : int) (def : int) (eff : string) : m =
+  { name = n; damage = dmg; defend = def; effect = eff }
+
+let snake_moves =
+  [ create_move "bite" 7 0 "Bleed"; create_move "flick" 5 0 "None" ]
+
 type t = {
   mutable hp : int;
   moves : m list;
+  mutable animation : string;
 }
 
-let create_move (dmg : int) (def : int) (eff : string) : m =
-  { damage = dmg; defend = def; effect = eff }
-
-let hyena_moves = [ create_move 7 0 "None"; create_move 5 0 "None" ]
-let create_enemy h m : t = { hp = h; moves = m }
-let get_dmg m = m.damage
-let init_enemy : t = { hp = 50; moves = hyena_moves }
+let create_enemy h m : t = { hp = h; moves = m; animation = "idle" }
+let init_enemy : t = { hp = 50; moves = snake_moves; animation = "idle" }
 let get_hp t = t.hp
 let get_moves t = t.moves
+let get_animation t = t.animation
+let update_animation t x = t.animation <- x
 let update_hp t x = t.hp <- t.hp - x
 
-let draw_hyena r t =
-  let src =
-    Rect.create ~x:0 ~y:0 ~w:(enemy_width - 10) ~h:(frame_height - 10)
+let draw_enemy_base r t =
+  let src_rect =
+    Rect.create
+      ~x:(camel_init_width + camel_width)
+      ~y:camel_init_height ~w:camel_width ~h:frame_height
   in
-  let dest = Rect.create ~x:enemy_x ~y:enemy_y ~w:175 ~h:175 in
-  match render_copy ~src ~dst:dest r t with
+  let dst_rect =
+    Rect.create ~x:camel_x ~y:camel_y ~w:camel_width_scaling
+      ~h:camel_height_scaling
+  in
+  match render_copy ~src:src_rect ~dst:dst_rect r t with
   | Ok () -> ()
-  | Error (`Msg e) -> failwith ("Failed to draw hyena: " ^ e)
+  | Error (`Msg e) -> failwith ("Failed to draw enemy: " ^ e)

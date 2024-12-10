@@ -23,7 +23,10 @@ let camel1A_deck =
   ]
 
 let hyena_moves =
-  [ Lib.Enemy.create_move 6 0 "None"; Lib.Enemy.create_move 6 0 "None" ]
+  [
+    Lib.Enemy.create_move "flick" 6 0 "None";
+    Lib.Enemy.create_move "bite" 6 0 "None";
+  ]
 
 (** [draw_one] takes in a hand and deck, shuffles the deck, and appends the
     first element of the deck onto the top of the hand if the deck is not empty.
@@ -99,7 +102,7 @@ let init () =
         | Error (`Msg e) -> failwith ("Unable to load camel texture: " ^ e)
       in
       let enemy_texture =
-        match Image.load_texture renderer "assets/wolf.png" with
+        match Image.load_texture renderer "assets/snake.png" with
         | Ok texture -> texture
         | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
       in
@@ -107,15 +110,18 @@ let init () =
 
 let draw state renderer bg_texture camel_texture enemy_texture =
   Sdl.render_clear renderer |> ignore;
-  Level.draw_level renderer bg_texture camel_texture enemy_texture;
-  Level.draw_animation state renderer bg_texture camel_texture enemy_texture;
+  Level.draw_background renderer bg_texture;
+  Level.draw_camel_animation state renderer bg_texture camel_texture
+    enemy_texture;
+  Level.draw_enemy_animation state renderer bg_texture camel_texture
+    enemy_texture;
   Sdl.render_present renderer
 
 let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     (deck : Lib.Card.t Lib.Deck.t) renderer camel_texture bg_texture
     enemy_texture =
   if Enemy.get_hp state.enemy <= 0 then (
-    print_endline "You defeated the hyena! Game Over.";
+    print_endline "You defeated the snake! Game Over.";
     None)
   else if Camel.get_hp state.player <= 0 then (
     print_endline "You have been defeated! Game Over.";
@@ -138,6 +144,7 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
         | [] -> raise (Failure "Enemy has no moves")
         | move :: _ -> move
       in
+      Enemy.update_animation state.enemy (Enemy.get_name enemy_attack);
       let max_energy = Camel.get_energy state.player - 3 in
       let max_defense = Camel.get_def state.player in
       let total_damage_taken = max 0 (enemy_attack.damage - max_defense) in
@@ -149,6 +156,8 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
       Camel.update_def state.player (0 - max_defense);
       Camel.update_energy state.player max_energy;
       Camel.update_hp state.player enemy_attack.damage;
+      Camel.update_animation state.player "camel_damaged";
+      draw state renderer bg_texture camel_texture enemy_texture;
       print_endline
         (Printf.sprintf "Enemy attacks! You take %d damage!" enemy_attack.damage);
       Some (state, updated_hand, updated_deck))
@@ -170,7 +179,8 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
           Camel.update_energy state.player cst;
 
           print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg);
-
+          Enemy.update_animation state.enemy "snake_damaged";
+          draw state renderer bg_texture camel_texture enemy_texture;
           Some (state, updated_hand, deck))
         else
           let _ =

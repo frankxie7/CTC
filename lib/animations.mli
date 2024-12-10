@@ -10,8 +10,11 @@ type t = {
 type animation = t
 (* animation type *)
 
-val animation_table : (string * animation) list
-(** Table containing all animations. *)
+val camel_animation_table : (string * animation) list
+(** Table containing all camel animations. *)
+
+val snake_animation_table : (string * animation) list
+(** Table containing all snake animations. *)
 
 val get_name : (string * animation) list -> string -> string
 (** [get_name t] returns the name of the animation. *)
@@ -24,11 +27,3 @@ val get_frame_num : (string * animation) list -> string -> int
 
 val animate : string -> int -> int -> t
 (** [animate name col frame_num] creates a new animation. *)
-
-
-(* val camel_take_damage : int -> int -> int -> int -> Sdl.renderer -> unit (**
-   [camel_take_damage row col src_width src_height r] Handles the camel's
-   reaction when taking damage. - [row]: Starting row of the sprite. - [col]:
-   Starting column of the sprite. - [src_width]: Width of the source rectangle.
-   - [src_height]: Height of the source rectangle. - [r]: Renderer used for
-   rendering. *) *)

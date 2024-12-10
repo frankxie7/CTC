@@ -35,9 +35,9 @@ let defend = animate "defend" 3 13
 let stomp = animate "stomp" 1 15
 let throw = animate "throw" 4 19
 let tackle = animate "tackle" 5 10
-(* let damaged = animate "damaged" 6 1 *)
+let camel_damaged = animate "camel_damaged" 6 3
 
-let animation_table =
+let camel_animation_table =
   [
     ("spit", spit);
     ("idle", idle);
@@ -45,5 +45,18 @@ let animation_table =
     ("stomp", stomp);
     ("throw", throw);
     ("tackle", tackle);
-    (* ("damaged", damaged); *)
+    ("camel_damaged", camel_damaged);
+  ]
+
+let flick = animate "flick" 1 5
+let bite = animate "bite" 2 13
+let snake_damaged = animate "snake_damaged" 3 3
+let idle = animate "idle" 1 1
+
+let snake_animation_table =
+  [
+    ("idle", idle);
+    ("flick", flick);
+    ("bite", bite);
+    ("snake_damaged", snake_damaged);
   ]

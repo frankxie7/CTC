@@ -14,5 +14,5 @@ val update_energy : t -> int -> unit
 val update_status : t -> string -> unit
 val update_animation : t -> string -> unit
 
-(* val draw_camel : Sdl.renderer -> (* SDL renderer *) Sdl.texture -> (* SDL
-   texture *) unit *)
+val draw_camel_base : Sdl.renderer -> Sdl.texture -> unit
+(**[draw_camel_base] draws a basic camel at its idle animation. *)
