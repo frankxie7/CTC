@@ -18,6 +18,9 @@ let create_move (n : string) (dmg : int) (def : int) (eff : string) : m =
 let snake_moves =
   [ create_move "bite" 7 0 "Bleed"; create_move "flick" 5 0 "None" ]
 
+let wolf_moves = [ create_move "bite" 15 0 "None" ]
+let man_moves = [ create_move "nuke" 400000 40000 "None" ]
+
 type t = {
   mutable hp : int;
   moves : m list;
@@ -25,7 +28,9 @@ type t = {
 }
 
 let create_enemy h m : t = { hp = h; moves = m; animation = "idle" }
-let init_enemy : t = { hp = 50; moves = snake_moves; animation = "idle" }
+let init_snake () : t = { hp = 50; moves = snake_moves; animation = "idle" }
+let init_wolf () : t = { hp = 1; moves = wolf_moves; animation = "idle" }
+let init_man () : t = { hp = 1; moves = man_moves; animation = "idle" }
 let get_hp t = t.hp
 let get_moves t = t.moves
 let get_animation t = t.animation

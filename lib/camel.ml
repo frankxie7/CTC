@@ -11,7 +11,7 @@ type t = {
   mutable animation : string;
 }
 
-let init_camel : t =
+let init_camel () : t =
   { hp = 100; energy = 3; defense = 0; status = "None"; animation = "idle" }
 
 let update_def t x = t.defense <- t.defense + x

@@ -2,7 +2,7 @@ open Tsdl
 
 type t
 
-val init_camel : t
+val init_camel : unit -> t
 val get_def : t -> int
 val get_hp : t -> int
 val get_energy : t -> int

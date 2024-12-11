@@ -19,7 +19,9 @@ let init_player (p : Camel.t) (e : Enemy.t) : players =
   { player = p; enemy = e }
 
 let bg_rect = Sdl.Rect.create ~x:0 ~y:0 ~w:screen_width ~h:screen_height
-let level_init () = { player = Camel.init_camel; enemy = Enemy.init_enemy }
+
+let level_init () =
+  { player = Camel.init_camel (); enemy = Enemy.init_snake () }
 
 let init_hp_bar x y curr_health max_health r : unit =
   let max_health = max_health * 3 in
@@ -99,6 +101,8 @@ let draw_enemy_animation state renderer bg_texture camel_texture enemy_texture =
     |> Result.get_ok;
     init_bar state renderer;
     Sdl.render_present renderer;
+    let x = Sdl.wait_event_timeout None 500 in
+    if x then () else ();
     Sdl.delay (Int32.of_int 100)
   done;
   Enemy.update_animation state.enemy "idle"
@@ -127,7 +131,8 @@ let draw_camel_animation state renderer bg_texture camel_texture enemy_texture =
     init_bar state renderer;
 
     Sdl.render_present renderer;
-    (* let x = Sdl.wait_event_timeout None 500 in if x then () else (); *)
+    let x = Sdl.wait_event_timeout None 500 in
+    if x then () else ();
     Sdl.delay (Int32.of_int 100)
   done;
 

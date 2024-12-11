@@ -22,12 +22,6 @@ let camel1A_deck =
     Lib.Card.tackle;
   ]
 
-let hyena_moves =
-  [
-    Lib.Enemy.create_move "flick" 6 0 "None";
-    Lib.Enemy.create_move "bite" 6 0 "None";
-  ]
-
 (** [draw_one] takes in a hand and deck, shuffles the deck, and appends the
     first element of the deck onto the top of the hand if the deck is not empty.
     Returns a tuple of the updated hand and deck. *)
@@ -72,7 +66,7 @@ let load_texture renderer path =
   | Error (`Msg e) -> failwith ("Unable to load texture: " ^ e)
 
 (**[init] initializes window, renderer, background texture, camel texture*)
-let init () =
+let init (enemy_asset : string) =
   begin
     match Sdl.init Sdl.Init.everything with
     | Ok () -> ()
@@ -102,26 +96,26 @@ let init () =
         | Error (`Msg e) -> failwith ("Unable to load camel texture: " ^ e)
       in
       let enemy_texture =
-        match Image.load_texture renderer "assets/snake.png" with
+        match Image.load_texture renderer enemy_asset with
         | Ok texture -> texture
         | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
       in
       (renderer, (background_texture, camel_texture, enemy_texture))
 
-let draw state renderer bg_texture camel_texture enemy_texture =
+let draw state renderer bg_texture camel_texture snake_texture =
   Sdl.render_clear renderer |> ignore;
   Level.draw_background renderer bg_texture;
   Level.draw_camel_animation state renderer bg_texture camel_texture
-    enemy_texture;
+    snake_texture;
   Level.draw_enemy_animation state renderer bg_texture camel_texture
-    enemy_texture;
+    snake_texture;
   Sdl.render_present renderer
 
-let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
+let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     (deck : Lib.Card.t Lib.Deck.t) renderer camel_texture bg_texture
     enemy_texture =
   if Enemy.get_hp state.enemy <= 0 then (
-    print_endline "You defeated the snake! Game Over.";
+    print_endline "You beat the enemy";
     None)
   else if Camel.get_hp state.player <= 0 then (
     print_endline "You have been defeated! Game Over.";
@@ -192,22 +186,56 @@ let game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
         Some (state, hand, deck))
 
 let run () =
-  let renderer, (bg_texture, camel_texture, enemy_texture) = init () in
-
-  let rec main_loop (state : Level.t) hand deck =
+  let rec main_loop (state : Level.t) hand deck renderer bg_texture
+      camel_texture enemy_texture level =
     draw state renderer bg_texture camel_texture enemy_texture;
     match
       game state hand deck renderer camel_texture bg_texture enemy_texture
     with
-    | None -> print_endline "Thank you for playing!"
+    | None ->
+        let level = level + 1 in
+        if level = 2 then
+          let renderer, (bg_texture, camel_texture, enemy_texture) =
+            init "assets/wolf.png"
+          in
+          let initial_state =
+            Level.init_player (Camel.init_camel ()) (Enemy.init_wolf ())
+          in
+          let full_deck =
+            List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty
+          in
+          let shuffled_deck = Lib.Deck.shuffle full_deck in
+          let hand, deck = Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty in
+          main_loop initial_state hand deck renderer bg_texture camel_texture
+            enemy_texture 2
+        else if level = 3 then
+          let renderer, (bg_texture, camel_texture, enemy_texture) =
+            init "assets/man.png"
+          in
+          let initial_state =
+            Level.init_player (Camel.init_camel ()) (Enemy.init_man ())
+          in
+          let full_deck =
+            List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty
+          in
+          let shuffled_deck = Lib.Deck.shuffle full_deck in
+          let hand, deck = Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty in
+          main_loop initial_state hand deck renderer bg_texture camel_texture
+            enemy_texture 3
     | Some (updated_state, updated_hand, updated_deck) ->
-        main_loop updated_state updated_hand updated_deck
+        main_loop updated_state updated_hand updated_deck renderer bg_texture
+          camel_texture enemy_texture level
   in
-
-  let initial_state = Level.init_player Camel.init_camel Enemy.init_enemy in
+  let renderer, (bg_texture, camel_texture, enemy_texture) =
+    init "assets/snake.png"
+  in
+  let initial_state =
+    Level.init_player (Camel.init_camel ()) (Enemy.init_snake ())
+  in
   let full_deck = List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty in
   let shuffled_deck = Lib.Deck.shuffle full_deck in
   let hand, deck = Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty in
-  main_loop initial_state hand deck
+  main_loop initial_state hand deck renderer bg_texture camel_texture
+    enemy_texture 1
 
 let main () = run ()
