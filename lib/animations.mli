@@ -16,6 +16,12 @@ val camel_animation_table : (string * animation) list
 val snake_animation_table : (string * animation) list
 (** Table containing all snake animations. *)
 
+val bear_animation_table : (string * animation) list
+(** Table containing all bear animations. *)
+
+val human_animation_table : (string * animation) list
+(** Table containing all human animations. *)
+
 val get_name : (string * animation) list -> string -> string
 (** [get_name t] returns the name of the animation. *)
 

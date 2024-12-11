@@ -13,28 +13,34 @@ val camel_y : int
 val frame_height : int
 (* height of each frame on the sprite sheet*)
 
-val enemy_width : int
-val camel_width : int
+val frame_width : int
 (* width of each frame on the sprite sheet*)
 
-val camel_height_scaling : int
-(* scaling of the camel's height on the sprite sheet to the display *)
+val frame_height_scaling : int
+(* scaling of the each frame's height scaling on the sprite sheet to the
+   display *)
 
-val camel_width_scaling : int
-(*scaling of the camel's width on the sprite sheet to the display *)
+val frame_width_scaling : int
+(*scaling of the frame's width on the sprite sheet to the display *)
 
-val camel_init_width : int
-val camel_init_height : int
+val init_width : int
+(* distance between side of the png to the left side of the first frame. *)
+
+val init_height : int
+(* distance between the top of th png to the top of the first frame*)
+
 val camel_max_hp : int
 (* camel's max health *)
 
 val enemy_max_hp : int
 (* enemy's max health *)
 
-val enemy_x : int
+val enemy_hp_x : int
 (* enemy x location *)
 
-val enemy_y : int
+val enemy_hp_y : int
 (* enemy y location*)
 
+val enemy_x : int
+val enemy_y : int
 val camel_max_energy : int

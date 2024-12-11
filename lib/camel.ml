@@ -27,13 +27,12 @@ let get_animation t = t.animation
 
 let draw_camel_base r t =
   let src_rect =
-    Rect.create
-      ~x:(camel_init_width + camel_width)
-      ~y:camel_init_height ~w:camel_width ~h:frame_height
+    Rect.create ~x:(init_width + frame_width) ~y:init_height ~w:frame_width
+      ~h:frame_height
   in
   let dst_rect =
-    Rect.create ~x:camel_x ~y:camel_y ~w:camel_width_scaling
-      ~h:camel_height_scaling
+    Rect.create ~x:camel_x ~y:camel_y ~w:frame_width_scaling
+      ~h:frame_height_scaling
   in
   match render_copy ~src:src_rect ~dst:dst_rect r t with
   | Ok () -> ()

@@ -18,6 +18,6 @@ val draw_camel_animation :
   t -> Sdl.renderer -> Sdl.texture -> Sdl.texture -> Sdl.texture -> unit
 
 val draw_enemy_animation :
-  t -> Sdl.renderer -> Sdl.texture -> Sdl.texture -> Sdl.texture -> unit
+  t -> Sdl.renderer -> Sdl.texture -> Sdl.texture -> Sdl.texture -> int -> unit
 
 val init_bar : t -> Sdl.renderer -> unit

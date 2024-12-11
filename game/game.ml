@@ -102,18 +102,18 @@ let init (enemy_asset : string) =
       in
       (renderer, (background_texture, camel_texture, enemy_texture))
 
-let draw state renderer bg_texture camel_texture snake_texture =
+let draw state renderer bg_texture camel_texture snake_texture level =
   Sdl.render_clear renderer |> ignore;
   Level.draw_background renderer bg_texture;
   Level.draw_camel_animation state renderer bg_texture camel_texture
     snake_texture;
   Level.draw_enemy_animation state renderer bg_texture camel_texture
-    snake_texture;
+    snake_texture level;
   Sdl.render_present renderer
 
 let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     (deck : Lib.Card.t Lib.Deck.t) renderer camel_texture bg_texture
-    enemy_texture =
+    enemy_texture level =
   if Enemy.get_hp state.enemy <= 0 then (
     print_endline "You beat the enemy";
     None)
@@ -139,6 +139,10 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
         | move :: _ -> move
       in
       Enemy.update_animation state.enemy (Enemy.get_name enemy_attack);
+      print_endline
+        (Printf.sprintf "Enemy attacks with %s! You take %d damage!"
+           (Enemy.get_name enemy_attack)
+           enemy_attack.damage);
       let max_energy = Camel.get_energy state.player - 3 in
       let max_defense = Camel.get_def state.player in
       let total_damage_taken = max 0 (enemy_attack.damage - max_defense) in
@@ -151,9 +155,8 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
       Camel.update_energy state.player max_energy;
       Camel.update_hp state.player enemy_attack.damage;
       Camel.update_animation state.player "camel_damaged";
-      draw state renderer bg_texture camel_texture enemy_texture;
-      print_endline
-        (Printf.sprintf "Enemy attacks! You take %d damage!" enemy_attack.damage);
+      draw state renderer bg_texture camel_texture enemy_texture level;
+
       Some (state, updated_hand, updated_deck))
     else
       try
@@ -174,7 +177,7 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
 
           print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg);
           Enemy.update_animation state.enemy "snake_damaged";
-          draw state renderer bg_texture camel_texture enemy_texture;
+          draw state renderer bg_texture camel_texture enemy_texture level;
           Some (state, updated_hand, deck))
         else
           let _ =
@@ -188,18 +191,19 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
 let run () =
   let rec main_loop (state : Level.t) hand deck renderer bg_texture
       camel_texture enemy_texture level =
-    draw state renderer bg_texture camel_texture enemy_texture;
+    draw state renderer bg_texture camel_texture enemy_texture level;
     match
-      game state hand deck renderer camel_texture bg_texture enemy_texture
+      game state hand deck renderer camel_texture bg_texture enemy_texture level
     with
     | None ->
         let level = level + 1 in
         if level = 2 then
           let renderer, (bg_texture, camel_texture, enemy_texture) =
-            init "assets/wolf.png"
+            init "assets/snake.png"
+            (* TODO: replace this with bear when applicable*)
           in
           let initial_state =
-            Level.init_player (Camel.init_camel ()) (Enemy.init_wolf ())
+            Level.init_player (Camel.init_camel ()) (Enemy.init_bear ())
           in
           let full_deck =
             List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty
@@ -210,7 +214,7 @@ let run () =
             enemy_texture 2
         else if level = 3 then
           let renderer, (bg_texture, camel_texture, enemy_texture) =
-            init "assets/man.png"
+            init "assets/human.png"
           in
           let initial_state =
             Level.init_player (Camel.init_camel ()) (Enemy.init_man ())

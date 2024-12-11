@@ -12,19 +12,27 @@ type t = {
 
 type animation = t
 
-let rec lookup k = function
-  | [] -> failwith "Error: Not found"
-  | (k', v) :: t -> if k = k' then v else lookup k t
-
 let get_name t k =
+  let rec lookup k = function
+    | [] -> failwith "Error: Get_name function: Animation not found"
+    | (k', v) :: t -> if k = k' then v else lookup k t
+  in
   let x = lookup k t in
   x.name
 
 let get_col t k =
+  let rec lookup k = function
+    | [] -> failwith "Error: Get_col function: Animation not found"
+    | (k', v) :: t -> if k = k' then v else lookup k t
+  in
   let x = lookup k t in
   x.col
 
 let get_frame_num t k =
+  let rec lookup k = function
+    | [] -> failwith "Error: Frame_num function: Animation not found"
+    | (k', v) :: t -> if k = k' then v else lookup k t
+  in
   let x = lookup k t in
   x.total_frames
 
@@ -55,8 +63,22 @@ let idle = animate "idle" 1 1
 
 let snake_animation_table =
   [
+    (* ("flick", flick); *)
     ("idle", idle);
-    ("flick", flick);
     ("bite", bite);
     ("snake_damaged", snake_damaged);
   ]
+
+let bear_animation_table =
+  [
+    ("idle", idle);
+    ("flick", flick);
+    (* ("bite", bite); *)
+    ("snake_damaged", snake_damaged);
+  ]
+
+(* let chuck = animate "chuck" 1 28 *)
+let music = animate "music" 2 29
+let idle = animate "idle" 1 1
+let human_animation_table = [ ("idle", idle); ("music", music) ]
+(*("chuck", chuck);*)

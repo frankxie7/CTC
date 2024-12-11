@@ -70,32 +70,44 @@ let init_energy_bar (t : players) r : unit =
 let init_bar (t : players) r : unit =
   init_hp_bar (camel_x + 20) (camel_y - 25) (Camel.get_hp t.player) camel_max_hp
     r;
-  init_hp_bar (enemy_x + 15) (enemy_y - 15) (Enemy.get_hp t.enemy) enemy_max_hp
-    r;
+  init_hp_bar (enemy_hp_x + 15) (enemy_hp_y - 15) (Enemy.get_hp t.enemy)
+    enemy_max_hp r;
   init_energy_bar t r
 
 let draw_background r bg_texture =
   let bg_rect = Sdl.Rect.create ~x:0 ~y:0 ~w:screen_width ~h:screen_height in
   Sdl.render_copy ~src:bg_rect ~dst:bg_rect r bg_texture |> Result.get_ok
 
-let draw_enemy_animation state renderer bg_texture camel_texture enemy_texture =
-  let anim_name = Enemy.get_animation state.enemy in
-  let total_frames =
-    Animations.get_frame_num Animations.snake_animation_table anim_name
+let draw_enemy_animation state renderer bg_texture camel_texture enemy_texture
+    level =
+  let animation_table =
+    match level with
+    | 1 ->
+        print_string "Snake animation table chosen.\n";
+        Animations.snake_animation_table
+    | 2 ->
+        print_string "Bear animation table chosen.\n";
+        Animations.bear_animation_table
+    | 3 ->
+        print_string "Human animation table chosen.\n";
+        Animations.human_animation_table
+    | _ -> failwith "Animation table error"
   in
+  let anim_name = Enemy.get_animation state.enemy in
+  let total_frames = Animations.get_frame_num animation_table anim_name in
   for current_frame = 0 to total_frames - 1 do
     draw_background renderer bg_texture;
     draw_camel_base renderer camel_texture;
-    let col = Animations.get_col Animations.snake_animation_table anim_name in
+    let col = Animations.get_col animation_table anim_name in
     let src_rect =
       Sdl.Rect.create
-        ~x:(camel_init_width + (camel_width * (col - 1)))
-        ~y:(camel_init_height + (current_frame * frame_height))
-        ~w:camel_width ~h:frame_height
+        ~x:(init_width + (frame_width * (col - 1)))
+        ~y:(init_height + (current_frame * frame_height))
+        ~w:frame_width ~h:frame_height
     in
     let dst_rect =
-      Sdl.Rect.create ~x:camel_x ~y:camel_y ~w:camel_width_scaling
-        ~h:camel_height_scaling
+      Sdl.Rect.create ~x:enemy_x ~y:enemy_y ~w:frame_width_scaling
+        ~h:frame_height_scaling
     in
     Sdl.render_copy ~src:src_rect ~dst:dst_rect renderer enemy_texture
     |> Result.get_ok;
@@ -118,13 +130,13 @@ let draw_camel_animation state renderer bg_texture camel_texture enemy_texture =
     let col = Animations.get_col Animations.camel_animation_table anim_name in
     let src_rect =
       Sdl.Rect.create
-        ~x:(camel_init_width + (camel_width * (col - 1)))
-        ~y:(camel_init_height + (current_frame * frame_height))
-        ~w:camel_width ~h:frame_height
+        ~x:(init_width + (frame_width * (col - 1)))
+        ~y:(init_height + (current_frame * frame_height))
+        ~w:frame_width ~h:frame_height
     in
     let dst_rect =
-      Sdl.Rect.create ~x:camel_x ~y:camel_y ~w:camel_width_scaling
-        ~h:camel_height_scaling
+      Sdl.Rect.create ~x:camel_x ~y:camel_y ~w:frame_width_scaling
+        ~h:frame_height_scaling
     in
     Sdl.render_copy ~src:src_rect ~dst:dst_rect renderer camel_texture
     |> Result.get_ok;
