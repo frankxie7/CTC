@@ -1,18 +1,8 @@
 open Tsdl.Sdl
 open Tsdl_image
 
-type m = {
-  name : string;
-  damage : int;
-  defend : int;
-  effect : string;
-}
-
-type t = {
-  mutable hp : int;
-  moves : m array;
-  mutable animation : string;
-}
+type m
+type t
 
 val get_name : m -> string
 (** [get_name m] returns the name of the move [m]. *)

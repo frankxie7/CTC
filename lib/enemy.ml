@@ -9,6 +9,12 @@ type m = {
   effect : string;
 }
 
+type t = {
+  mutable hp : int;
+  moves : m array;
+  mutable animation : string;
+}
+
 let get_name m = m.name
 let get_dmg m = m.damage
 
@@ -23,14 +29,8 @@ let create_move (n : string) (dmg : int) (def : int) (eff : string) : m =
 let snake_moves = [| create_move "bite" 7 0 "Bleed" |]
 let bear_moves = [| create_move "flick" 5 0 "None" |]
 let man_moves = [| create_move "mohan" 10 1 "None" |]
+
 (*create_move "chuck" 10 1 "None";*)
-
-type t = {
-  mutable hp : int;
-  moves : m array;
-  mutable animation : string;
-}
-
 let create_enemy h m : t = { hp = h; moves = m; animation = "idle" }
 let init_snake () : t = { hp = 10; moves = snake_moves; animation = "idle" }
 let init_bear () : t = { hp = 10; moves = bear_moves; animation = "idle" }
