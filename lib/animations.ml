@@ -69,12 +69,17 @@ let snake_animation_table =
     ("snake_damaged", snake_damaged);
   ]
 
+let roar = animate "roar" 1 13
+let maul = animate "maul" 2 17
+let idle = animate "idle" 1 1
+let bear_damaged = animate "bear_damaged" 3 3
+
 let bear_animation_table =
   [
     ("idle", idle);
-    ("flick", flick);
-    ("bite", bite);
-    ("snake_damaged", snake_damaged);
+    ("roar", roar);
+    ("maul", maul);
+    ("bear_damaged", bear_damaged);
   ]
 
 let chuck = animate "chuck" 1 34
