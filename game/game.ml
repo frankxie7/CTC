@@ -2,7 +2,6 @@ open Tsdl_image
 open Tsdl
 open Lib
 open Const
-open Random
 
 (**[pos ch] handles when current health is less than 0. If it is negative then
    it equals 0, if it isn't then it returns itself.*)
@@ -125,7 +124,7 @@ let player_moves (state : Level.t) (hand : Lib.Card.t Lib.Deck.t) input card
     Camel.update_energy state.player cst;
 
     print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg);
-    Enemy.update_animation state.enemy "snake_damaged";
+    (*Enemy.update_animation state.enemy "snake_damaged";*)
     true)
   else
     let _ = print_endline "You don't have enough energy to play that card!!!" in
@@ -155,7 +154,6 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
       print_endline "You drew a card!";
       let enemy_attack = enemy_moves state in
       Enemy.update_animation state.enemy (Enemy.get_name enemy_attack);
-
       print_endline
         (Printf.sprintf "Enemy attacks with %s! You take %d damage!"
            (Enemy.get_name enemy_attack)
@@ -187,58 +185,61 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
         Some (state, hand, deck, false))
 
 let run () =
-  let rec main_loop (state : Level.t) hand deck renderer bg_texture
-      camel_texture enemy_texture level =
-    let _ = Sdl.wait_event_timeout None 500 in
-    draw state renderer bg_texture camel_texture enemy_texture level;
-    match
-      game state hand deck renderer camel_texture bg_texture enemy_texture level
-    with
-    | None -> ()
-    | Some (updated_state, updated_hand, updated_deck, ended) ->
-        if not ended then
-          main_loop updated_state updated_hand updated_deck renderer bg_texture
-            camel_texture enemy_texture level
-        else Level.draw_background renderer bg_texture;
-        let level = level + 1 in
-        if level = 2 then (
-          let enemy_texture =
-            match Image.load_texture renderer "assets/snake.png" with
-            | Ok texture -> texture
-            | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
-          in
-          Enemy.draw_enemy_base renderer enemy_texture;
-          Camel.draw_camel_base renderer camel_texture;
-          let state =
-            Level.init_player (Camel.init_camel ()) (Enemy.init_bear ())
-          in
-          main_loop state updated_hand updated_deck renderer bg_texture
-            camel_texture enemy_texture level)
-        else if level = 3 then (
-          let enemy_texture =
-            match Image.load_texture renderer "assets/man.png" with
-            | Ok texture -> texture
-            | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
-          in
-          Enemy.draw_enemy_base renderer enemy_texture;
-          Camel.draw_camel_base renderer camel_texture;
-          let state =
-            Level.init_player (Camel.init_camel ()) (Enemy.init_man ())
-          in
-          main_loop state updated_hand updated_deck renderer bg_texture
-            camel_texture enemy_texture level)
-        else print_endline "you won"
-  in
-  let renderer, (bg_texture, camel_texture, enemy_texture) =
-    init "assets/snake.png"
-  in
-  let initial_state =
-    Level.init_player (Camel.init_camel ()) (Enemy.init_snake ())
-  in
-  let full_deck = List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty in
-  let shuffled_deck = Lib.Deck.shuffle full_deck in
-  let hand, deck = Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty in
-  main_loop initial_state hand deck renderer bg_texture camel_texture
-    enemy_texture 1
+  try
+    let rec main_loop (state : Level.t) hand deck renderer bg_texture
+        camel_texture enemy_texture level =
+      draw state renderer bg_texture camel_texture enemy_texture level;
+      match
+        game state hand deck renderer camel_texture bg_texture enemy_texture
+          level
+      with
+      | None -> Sdl.destroy_renderer renderer
+      | Some (updated_state, updated_hand, updated_deck, ended) ->
+          if not ended then
+            main_loop updated_state updated_hand updated_deck renderer
+              bg_texture camel_texture enemy_texture level
+          else Level.draw_background renderer bg_texture;
+          let level = level + 1 in
+          if level = 2 then (
+            let enemy_texture =
+              match Image.load_texture renderer "assets/snake.png" with
+              | Ok texture -> texture
+              | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
+            in
+            Enemy.draw_enemy_base renderer enemy_texture;
+            Camel.draw_camel_base renderer camel_texture;
+            let state =
+              Level.init_player (Camel.init_camel ()) (Enemy.init_bear ())
+            in
+            main_loop state updated_hand updated_deck renderer bg_texture
+              camel_texture enemy_texture level)
+          else if level = 3 then (
+            let enemy_texture =
+              match Image.load_texture renderer "assets/man.png" with
+              | Ok texture -> texture
+              | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
+            in
+            Enemy.draw_enemy_base renderer enemy_texture;
+            Camel.draw_camel_base renderer camel_texture;
+            let state =
+              Level.init_player (Camel.init_camel ()) (Enemy.init_man ())
+            in
+            main_loop state updated_hand updated_deck renderer bg_texture
+              camel_texture enemy_texture level)
+          else print_endline "you won"
+    in
+
+    let renderer, (bg_texture, camel_texture, enemy_texture) =
+      init "assets/snake.png"
+    in
+    let initial_state =
+      Level.init_player (Camel.init_camel ()) (Enemy.init_snake ())
+    in
+    let full_deck = List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty in
+    let shuffled_deck = Lib.Deck.shuffle full_deck in
+    let hand, deck = Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty in
+    main_loop initial_state hand deck renderer bg_texture camel_texture
+      enemy_texture 1
+  with _ -> ()
 
 let main () = run ()
