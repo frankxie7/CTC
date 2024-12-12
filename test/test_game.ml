@@ -24,6 +24,97 @@ let draw_one hand deck =
     let new_hand = Lib.Deck.push (Lib.Deck.peek shuffled_deck) hand in
     (new_hand, Lib.Deck.pop shuffled_deck)
 
+let test_init_camel () =
+  let camel = Lib.Camel.init_camel () in
+  assert_equal 100 (Lib.Camel.get_hp camel);
+  assert_equal 3 (Lib.Camel.get_energy camel);
+  assert_equal 0 (Lib.Camel.get_def camel);
+  assert_equal "None" (Lib.Camel.get_status camel);
+  assert_equal "idle" (Lib.Camel.get_animation camel)
+
+let test_update_hp () =
+  let camel = Lib.Camel.init_camel () in
+  Lib.Camel.update_hp camel 10;
+  assert_equal 90 (Lib.Camel.get_hp camel)
+
+let test_update_defense () =
+  let camel = Lib.Camel.init_camel () in
+  Lib.Camel.update_def camel 5;
+  assert_equal 5 (Lib.Camel.get_def camel)
+
+let test_update_energy () =
+  let camel = Lib.Camel.init_camel () in
+  Lib.Camel.update_energy camel 1;
+  assert_equal 2 (Lib.Camel.get_energy camel)
+
+let test_update_status () =
+  let camel = Lib.Camel.init_camel () in
+  Lib.Camel.update_status camel "Weakened";
+  assert_equal "Weakened" (Lib.Camel.get_status camel)
+
+let test_update_animation () =
+  let camel = Lib.Camel.init_camel () in
+  Lib.Camel.update_animation camel "attack";
+  assert_equal "attack" (Lib.Camel.get_animation camel)
+
+let camel_tests =
+  "camel tests"
+  >::: [
+         ("test_init_camel" >:: fun _ -> test_init_camel ());
+         ("test_update_hp" >:: fun _ -> test_update_hp ());
+         ("test_update_defense" >:: fun _ -> test_update_defense ());
+         ("test_update_energy" >:: fun _ -> test_update_energy ());
+         ("test_update_status" >:: fun _ -> test_update_status ());
+         ("test_update_animation" >:: fun _ -> test_update_animation ());
+       ]
+
+let test_create_move () =
+  let move = Lib.Enemy.create_move "strike" 10 5 "Stun" in
+  assert_equal "strike" (Lib.Enemy.get_name move);
+  assert_equal 10 (Lib.Enemy.get_dmg move);
+  assert_equal 5 move.defend;
+  assert_equal "Stun" move.effect
+
+let test_init_snake () =
+  let snake = Lib.Enemy.init_snake () in
+  assert_equal 10 (Lib.Enemy.get_hp snake);
+  assert_equal "idle" (Lib.Enemy.get_animation snake);
+  let moves = Lib.Enemy.get_moves snake in
+  assert_equal 1 (List.length moves);
+  let move = List.hd moves in
+  assert_equal "bite" (Lib.Enemy.get_name move);
+  assert_equal 7 (Lib.Enemy.get_dmg move)
+
+let test_update_hp () =
+  let enemy = Lib.Enemy.init_snake () in
+  Lib.Enemy.update_hp enemy 3;
+  assert_equal 7 (Lib.Enemy.get_hp enemy)
+
+let test_update_animation () =
+  let enemy = Lib.Enemy.init_snake () in
+  Lib.Enemy.update_animation enemy "attack";
+  assert_equal "attack" (Lib.Enemy.get_animation enemy)
+
+let test_create_enemy () =
+  let moves = [ Lib.Enemy.create_move "smash" 15 0 "Burn" ] in
+  let enemy = Lib.Enemy.create_enemy 20 moves in
+  assert_equal 20 (Lib.Enemy.get_hp enemy);
+  assert_equal "idle" (Lib.Enemy.get_animation enemy);
+  assert_equal 1 (List.length (Lib.Enemy.get_moves enemy));
+  let move = List.hd (Lib.Enemy.get_moves enemy) in
+  assert_equal "smash" (Lib.Enemy.get_name move);
+  assert_equal 15 (Lib.Enemy.get_dmg move)
+
+let enemy_tests =
+  "enemy tests"
+  >::: [
+         ("test_create_move" >:: fun _ -> test_create_move ());
+         ("test_init_snake" >:: fun _ -> test_init_snake ());
+         ("test_update_hp" >:: fun _ -> test_update_hp ());
+         ("test_update_animation" >:: fun _ -> test_update_animation ());
+         ("test_create_enemy" >:: fun _ -> test_create_enemy ());
+       ]
+
 let test_get_name () =
   let card = Lib.Card.spit in
   assert_equal "spit" (Lib.Card.get_name card)
@@ -158,4 +249,6 @@ let deck_tests =
          ("test_deck_to_strings" >:: fun _ -> test_deck_to_strings ());
        ]
 
-let () = run_test_tt_main ("test suite" >::: [ deck_tests; card_tests ])
+let () =
+  run_test_tt_main
+    ("test suite" >::: [ deck_tests; card_tests; camel_tests; enemy_tests ])
