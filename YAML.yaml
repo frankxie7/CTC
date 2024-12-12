@@ -14,7 +14,7 @@ pm:
 # Set to false if you don't want your gallery entry to be public.
 publish: true
 # Pithy title
-title: "The Complete Caml Calculator (CCC)"
+title: "Conquer the Caravan"
 # OK if this is a Cornell Github link, but public gallery viewers won't be able to see it.
 git-repo: "https://github.coecis.cornell.edu/hz639/3110_final_project"
 # Replace the URL with your own demo video.
@@ -27,4 +27,4 @@ desc: >
   the enemies get harder to defeat, requiring both luck and skill from the 
   player to succeed. 
 
-  Graphics are generated using OCaml's Graphics library.
+  Graphics and animations are generated using OCaml's tsdl library. 

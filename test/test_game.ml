@@ -137,7 +137,7 @@ let test_get_effect () =
 
 let test_print_card () =
   let expected_output =
-    "spit | cost: 1 | dmg : 10 |\n   defend : 0 | effect : Weaken"
+    "spit | cost: 1 | dmg : 10 | defend : 0 | effect : Weaken"
   in
   assert_equal expected_output (Lib.Card.card_to_string Lib.Card.spit)
 
@@ -228,7 +228,7 @@ let test_deck_to_strings () =
   let deck = [ Lib.Card.spit; Lib.Card.throw ] in
   let expected_output =
     [
-      "1 -> spit | cost: 1 | dmg : 10 | defend : 0 | effect\n   : Weaken";
+      "1 -> spit | cost: 1 | dmg : 10 | defend : 0 | effect : Weaken";
       "2 -> throw | cost: 1 | dmg : 20 | defend : 0 | effect : Bleed";
     ]
   in
