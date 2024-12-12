@@ -133,9 +133,13 @@ let player_moves (state : Level.t) (hand : Lib.Card.t Lib.Deck.t) input card
 let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     (deck : Lib.Card.t Lib.Deck.t) renderer camel_texture bg_texture
     enemy_texture level =
-  if Enemy.get_hp state.enemy <= 0 then (
-    print_endline "You beat the enemy";
-    Some (state, hand, deck, true))
+  if Enemy.get_hp state.enemy <= 0 then
+    if level = 3 then (
+      print_endline "You beat the final boss";
+      Some (state, hand, deck, true))
+    else (
+      print_endline "You beat the enemy";
+      Some (state, hand, deck, true))
   else if Camel.get_hp state.player <= 0 then (
     print_endline "You have been defeated! Game Over.";
     None)
@@ -225,8 +229,8 @@ let run () =
               Level.init_player (Camel.init_camel ()) (Enemy.init_man ())
             in
             main_loop state updated_hand updated_deck renderer bg_texture
-              camel_texture enemy_texture level)
-          else print_endline "you won"
+              camel_texture enemy_texture level);
+          Sdl.destroy_renderer renderer
     in
 
     let renderer, (bg_texture, camel_texture, enemy_texture) =
