@@ -107,7 +107,7 @@ let draw state renderer bg_texture camel_texture snake_texture level =
 let enemy_moves (state : Level.t) =
   let move_list = Enemy.get_moves state.enemy in
   let len = Array.length move_list in
-  let index = Random.int_in_range ~min:0 ~max:(len - 1) in
+  let index = Random.int len in
   move_list.(index)
 
 let player_moves (state : Level.t) (hand : Lib.Card.t Lib.Deck.t) input card
