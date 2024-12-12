@@ -104,6 +104,32 @@ let draw state renderer bg_texture camel_texture snake_texture level =
     snake_texture level;
   Sdl.render_present renderer
 
+let enemy_moves (state : Level.t) =
+  let move_list = Enemy.get_moves state.enemy in
+  let len = Array.length move_list in
+  let index = Random.int_in_range ~min:0 ~max:len in
+  move_list.(index)
+
+let player_moves (state : Level.t) (hand : Lib.Card.t Lib.Deck.t) input card
+    index =
+  let dmg = Lib.Card.get_dmg card in
+  let def = Lib.Card.get_defend card in
+  let cst = Lib.Card.get_cost card in
+  if cst <= Camel.get_energy state.player then (
+    Camel.update_animation state.player (Lib.Card.get_name card);
+    print_endline ("Playing animation: " ^ Camel.get_animation state.player);
+
+    Camel.update_def state.player def;
+    Enemy.update_hp state.enemy dmg;
+    Camel.update_energy state.player cst;
+
+    print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg);
+    Enemy.update_animation state.enemy "snake_damaged";
+    true)
+  else
+    let _ = print_endline "You don't have enough energy to play that card!!!" in
+    false
+
 let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     (deck : Lib.Card.t Lib.Deck.t) renderer camel_texture bg_texture
     enemy_texture level =
@@ -126,11 +152,7 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     else if input = "End" then (
       let updated_hand, updated_deck = draw_one hand deck in
       print_endline "You drew a card!";
-      let enemy_attack =
-        match Enemy.get_moves state.enemy with
-        | [] -> raise (Failure "Enemy has no moves")
-        | move :: _ -> move
-      in
+      let enemy_attack = enemy_moves state in
       Enemy.update_animation state.enemy (Enemy.get_name enemy_attack);
       print_endline
         (Printf.sprintf "Enemy attacks with %s! You take %d damage!"
@@ -155,28 +177,9 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
       try
         let index = check_conditions input hand in
         let card, updated_hand = play_card hand index in
-
-        let dmg = Lib.Card.get_dmg card in
-        let def = Lib.Card.get_defend card in
-        let cst = Lib.Card.get_cost card in
-        if cst <= Camel.get_energy state.player then (
-          Camel.update_animation state.player (Lib.Card.get_name card);
-          print_endline
-            ("Playing animation: " ^ Camel.get_animation state.player);
-
-          Camel.update_def state.player def;
-          Enemy.update_hp state.enemy dmg;
-          Camel.update_energy state.player cst;
-
-          print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg);
-          Enemy.update_animation state.enemy "snake_damaged";
-          draw state renderer bg_texture camel_texture enemy_texture level;
-          Some (state, updated_hand, deck, false))
-        else
-          let _ =
-            print_endline "You don't have enough energy to play that card!!!"
-          in
-          Some (state, hand, deck, false)
+        if player_moves state hand input card index then
+          Some (state, updated_hand, deck, false)
+        else Some (state, hand, deck, false)
       with Failure msg ->
         print_endline msg;
         Some (state, hand, deck, false))
@@ -189,26 +192,7 @@ let run () =
     match
       game state hand deck renderer camel_texture bg_texture enemy_texture level
     with
-    | None ->
-        print_endline "You lost"
-        (*let level = level + 1 in if level = 2 then let renderer, (bg_texture,
-          camel_texture, enemy_texture) = init "assets/snake.png" (* TODO:
-          replace this with bear when applicable*) in
-
-          let initial_state = Level.init_player (Camel.init_camel ())
-          (Enemy.init_bear ()) in let full_deck = List.fold_right Lib.Deck.push
-          camel1A_deck Lib.Deck.empty in let shuffled_deck = Lib.Deck.shuffle
-          full_deck in let hand, deck = Lib.Deck.draw 5 shuffled_deck
-          Lib.Deck.empty in main_loop initial_state hand deck renderer
-          bg_texture camel_texture enemy_texture 2 else if level = 3 then let
-          renderer, (bg_texture, camel_texture, enemy_texture) = init
-          "assets/wolf.png" in let initial_state = Level.init_player
-          (Camel.init_camel ()) (Enemy.init_man ()) in let full_deck =
-          List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty in let
-          shuffled_deck = Lib.Deck.shuffle full_deck in let hand, deck =
-          Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty in main_loop
-          initial_state hand deck renderer bg_texture camel_texture
-          enemy_texture 3*)
+    | None -> print_endline "You lost"
     | Some (updated_state, updated_hand, updated_deck, ended) ->
         if not ended then
           main_loop updated_state updated_hand updated_deck renderer bg_texture

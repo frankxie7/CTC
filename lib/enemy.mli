@@ -10,7 +10,7 @@ type m = {
 
 type t = {
   mutable hp : int;
-  moves : m list;
+  moves : m array;
   mutable animation : string;
 }
 
@@ -24,16 +24,16 @@ val create_move : string -> int -> int -> string -> m
 (** [create_move n dmg def eff] creates a move with name [n], damage [dmg],
     defense [def], and effect [eff]. *)
 
-val snake_moves : m list
-(** A list of moves for the snake enemy. *)
+val snake_moves : m array
+(** An array of moves for the snake enemy. *)
 
-val bear_moves : m list
-(** A list of moves for the bear enemy. *)
+val bear_moves : m array
+(** An array of moves for the bear enemy. *)
 
-val man_moves : m list
-(** A list of moves for the human enemy. *)
+val man_moves : m array
+(** An array of moves for the human enemy. *)
 
-val create_enemy : int -> m list -> t
+val create_enemy : int -> m array -> t
 (** [create_enemy h m] creates an enemy with health [h] and a list of moves [m]. *)
 
 val init_snake : unit -> t
@@ -48,7 +48,7 @@ val init_man : unit -> t
 val get_hp : t -> int
 (** [get_hp t] returns the current health points of the enemy [t]. *)
 
-val get_moves : t -> m list
+val get_moves : t -> m array
 (** [get_moves t] returns the list of moves of the enemy [t]. *)
 
 val get_animation : t -> string
