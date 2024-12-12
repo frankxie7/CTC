@@ -41,6 +41,9 @@ let get_animation t = t.animation
 let update_animation t x = t.animation <- x
 let update_hp t x = t.hp <- t.hp - x
 
+let print_movelist (moves : m list) =
+  List.iter (fun move -> Printf.printf "Move Name: %s\n" move.name) moves
+
 let draw_enemy_base r t =
   let src_rect =
     Rect.create ~x:(init_width + frame_width) ~y:init_height ~w:frame_width
