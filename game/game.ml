@@ -2,6 +2,7 @@ open Tsdl_image
 open Tsdl
 open Lib
 open Const
+open Random
 
 (**[pos ch] handles when current health is less than 0. If it is negative then
    it equals 0, if it isn't then it returns itself.*)
