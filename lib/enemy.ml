@@ -22,7 +22,7 @@ let create_move (n : string) (dmg : int) (def : int) (eff : string) : m =
    "None" ] *)
 let snake_moves = [ create_move "bite" 7 0 "Bleed" ]
 let bear_moves = [ create_move "flick" 5 0 "None" ]
-let man_moves = [ create_move "music" 15 1 "None" ]
+let man_moves = [ create_move "mohan" 10 1 "None" ]
 (*create_move "chuck" 10 1 "None";*)
 
 type t = {

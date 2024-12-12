@@ -214,7 +214,7 @@ let run () =
             enemy_texture 2
         else if level = 3 then
           let renderer, (bg_texture, camel_texture, enemy_texture) =
-            init "assets/human.png"
+            init "assets/man.png"
           in
           let initial_state =
             Level.init_player (Camel.init_camel ()) (Enemy.init_man ())
