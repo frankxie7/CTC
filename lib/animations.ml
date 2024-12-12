@@ -73,7 +73,7 @@ let bear_animation_table =
   [
     ("idle", idle);
     ("flick", flick);
-    (* ("bite", bite); *)
+    ("bite", bite);
     ("snake_damaged", snake_damaged);
   ]
 
@@ -85,5 +85,11 @@ let idle = animate "idle" 1 1
 let human_damaged = animate "human_damaged" 5 1
 
 let human_animation_table =
-  [ ("idle", idle); ("mohan", mohan); ("human_damaged", human_damaged) ]
-(*("music", music); ("chuck", chuck)*)
+  [
+    ("idle", idle);
+    ("mohan", mohan);
+    ("music", music);
+    ("chuck", chuck);
+    ("cupid", cupid);
+    ("human_damaged", human_damaged);
+  ]
