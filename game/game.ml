@@ -207,8 +207,8 @@ let run () =
             | Ok texture -> texture
             | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
           in
-          Enemy.draw_enemy_base renderer enemy_texture;
-          Camel.draw_camel_base renderer camel_texture;
+          Level.draw_enemy_base renderer enemy_texture;
+          Level.draw_camel_base renderer camel_texture;
           let state =
             Level.init_player (Camel.init_camel ()) (Enemy.init_bear ())
           in
@@ -220,8 +220,8 @@ let run () =
             | Ok texture -> texture
             | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
           in
-          Enemy.draw_enemy_base renderer enemy_texture;
-          Camel.draw_camel_base renderer camel_texture;
+          Level.draw_enemy_base renderer enemy_texture;
+          Level.draw_camel_base renderer camel_texture;
           let state =
             Level.init_player (Camel.init_camel ()) (Enemy.init_man ())
           in

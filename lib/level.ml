@@ -78,6 +78,32 @@ let draw_background r bg_texture =
   let bg_rect = Sdl.Rect.create ~x:0 ~y:0 ~w:screen_width ~h:screen_height in
   Sdl.render_copy ~src:bg_rect ~dst:bg_rect r bg_texture |> Result.get_ok
 
+let draw_enemy_base r t =
+  let src_rect =
+    Sdl.Rect.create ~x:(init_width + frame_width) ~y:init_height ~w:frame_width
+      ~h:frame_height
+  in
+  let dst_rect =
+    Sdl.Rect.create ~x:enemy_x ~y:enemy_y ~w:frame_width_scaling
+      ~h:frame_height_scaling
+  in
+  match Sdl.render_copy ~src:src_rect ~dst:dst_rect r t with
+  | Ok () -> ()
+  | Error (`Msg e) -> failwith ("Failed to draw enemy: " ^ e)
+
+let draw_camel_base r t =
+  let src_rect =
+    Sdl.Rect.create ~x:(init_width + frame_width) ~y:init_height ~w:frame_width
+      ~h:frame_height
+  in
+  let dst_rect =
+    Sdl.Rect.create ~x:camel_x ~y:camel_y ~w:frame_width_scaling
+      ~h:frame_height_scaling
+  in
+  match Sdl.render_copy ~src:src_rect ~dst:dst_rect r t with
+  | Ok () -> ()
+  | Error (`Msg e) -> failwith ("Failed to draw base camel: " ^ e)
+
 let draw_enemy_animation state renderer bg_texture camel_texture enemy_texture
     level =
   let animation_table =
