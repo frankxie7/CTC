@@ -53,13 +53,6 @@ let check_conditions input hand =
   | Failure _ -> failwith "Invalid input. Enter a valid number."
   | _ -> failwith "Unexpected error"
 
-let create_renderer window =
-  match
-    Sdl.create_renderer ~index:(-1) ~flags:Sdl.Renderer.presentvsync window
-  with
-  | Ok r -> r
-  | Error e -> failwith ("Unable to create renderer: " ^ Sdl.get_error ())
-
 let load_texture renderer path =
   match Image.load_texture renderer path with
   | Ok texture -> texture
@@ -157,7 +150,7 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
       Camel.update_animation state.player "camel_damaged";
       draw state renderer bg_texture camel_texture enemy_texture level;
 
-      Some (state, updated_hand, updated_deck))
+      Some (state, updated_hand, updated_deck, false))
     else
       try
         let index = check_conditions input hand in
@@ -178,57 +171,77 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
           print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg);
           Enemy.update_animation state.enemy "snake_damaged";
           draw state renderer bg_texture camel_texture enemy_texture level;
-          Some (state, updated_hand, deck))
+          Some (state, updated_hand, deck, false))
         else
           let _ =
             print_endline "You don't have enough energy to play that card!!!"
           in
-          Some (state, hand, deck)
+          Some (state, hand, deck, false)
       with Failure msg ->
         print_endline msg;
-        Some (state, hand, deck))
+        Some (state, hand, deck, false))
 
 let run () =
   let rec main_loop (state : Level.t) hand deck renderer bg_texture
       camel_texture enemy_texture level =
+    let _ = Sdl.wait_event_timeout None 500 in
     draw state renderer bg_texture camel_texture enemy_texture level;
     match
       game state hand deck renderer camel_texture bg_texture enemy_texture level
     with
     | None ->
+        print_endline "You lost"
+        (*let level = level + 1 in if level = 2 then let renderer, (bg_texture,
+          camel_texture, enemy_texture) = init "assets/snake.png" (* TODO:
+          replace this with bear when applicable*) in
+
+          let initial_state = Level.init_player (Camel.init_camel ())
+          (Enemy.init_bear ()) in let full_deck = List.fold_right Lib.Deck.push
+          camel1A_deck Lib.Deck.empty in let shuffled_deck = Lib.Deck.shuffle
+          full_deck in let hand, deck = Lib.Deck.draw 5 shuffled_deck
+          Lib.Deck.empty in main_loop initial_state hand deck renderer
+          bg_texture camel_texture enemy_texture 2 else if level = 3 then let
+          renderer, (bg_texture, camel_texture, enemy_texture) = init
+          "assets/wolf.png" in let initial_state = Level.init_player
+          (Camel.init_camel ()) (Enemy.init_man ()) in let full_deck =
+          List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty in let
+          shuffled_deck = Lib.Deck.shuffle full_deck in let hand, deck =
+          Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty in main_loop
+          initial_state hand deck renderer bg_texture camel_texture
+          enemy_texture 3*)
+    | Some (updated_state, updated_hand, updated_deck, ended) ->
+        if not ended then
+          main_loop updated_state updated_hand updated_deck renderer bg_texture
+            camel_texture enemy_texture level
+        else Level.draw_background renderer bg_texture;
         let level = level + 1 in
-        if level = 2 then
-          let renderer, (bg_texture, camel_texture, enemy_texture) =
-            init "assets/snake.png"
-            (* TODO: replace this with bear when applicable*)
+        if level = 2 then (
+          let enemy_texture =
+            match Image.load_texture renderer "assets/wolf.png" with
+            | Ok texture -> texture
+            | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
           in
-          let initial_state =
+          Enemy.draw_enemy_base renderer enemy_texture;
+          Camel.draw_camel_base renderer camel_texture;
+          let state =
             Level.init_player (Camel.init_camel ()) (Enemy.init_bear ())
           in
-          let full_deck =
-            List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty
+          main_loop state updated_hand updated_deck renderer bg_texture
+            camel_texture enemy_texture level)
+        else if level = 3 then (
+          let enemy_texture =
+            match Image.load_texture renderer "assets/man.png" with
+            | Ok texture -> texture
+            | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
           in
-          let shuffled_deck = Lib.Deck.shuffle full_deck in
-          let hand, deck = Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty in
-          main_loop initial_state hand deck renderer bg_texture camel_texture
-            enemy_texture 2
-        else if level = 3 then
-          let renderer, (bg_texture, camel_texture, enemy_texture) =
-            init "assets/man.png"
+          Enemy.draw_enemy_base renderer enemy_texture;
+          Camel.draw_camel_base renderer camel_texture;
+          let state =
+            Level.init_player (Camel.init_camel ()) (Enemy.init_bear ())
           in
-          let initial_state =
-            Level.init_player (Camel.init_camel ()) (Enemy.init_man ())
-          in
-          let full_deck =
-            List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty
-          in
-          let shuffled_deck = Lib.Deck.shuffle full_deck in
-          let hand, deck = Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty in
-          main_loop initial_state hand deck renderer bg_texture camel_texture
-            enemy_texture 3
-    | Some (updated_state, updated_hand, updated_deck) ->
-        main_loop updated_state updated_hand updated_deck renderer bg_texture
-          camel_texture enemy_texture level
+          main_loop state updated_hand updated_deck renderer bg_texture
+            camel_texture enemy_texture level)
+        else print_endline "you won"
   in
   let renderer, (bg_texture, camel_texture, enemy_texture) =
     init "assets/snake.png"
