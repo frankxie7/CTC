@@ -2,6 +2,7 @@ open Tsdl_image
 open Tsdl
 open Lib
 open Const
+open Random
 
 (**[pos ch] handles when current health is less than 0. If it is negative then
    it equals 0, if it isn't then it returns itself.*)
@@ -135,7 +136,7 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     enemy_texture level =
   if Enemy.get_hp state.enemy <= 0 then (
     print_endline "You beat the enemy";
-    None)
+    Some (state, hand, deck, true))
   else if Camel.get_hp state.player <= 0 then (
     print_endline "You have been defeated! Game Over.";
     None)
@@ -193,7 +194,7 @@ let run () =
     match
       game state hand deck renderer camel_texture bg_texture enemy_texture level
     with
-    | None -> print_endline "You lost"
+    | None -> ()
     | Some (updated_state, updated_hand, updated_deck, ended) ->
         if not ended then
           main_loop updated_state updated_hand updated_deck renderer bg_texture
