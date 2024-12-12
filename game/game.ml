@@ -2,6 +2,7 @@ open Tsdl_image
 open Tsdl
 open Lib
 open Const
+open Random
 
 (**[pos ch] handles when current health is less than 0. If it is negative then
    it equals 0, if it isn't then it returns itself.*)
@@ -107,7 +108,7 @@ let draw state renderer bg_texture camel_texture snake_texture level =
 let enemy_moves (state : Level.t) =
   let move_list = Enemy.get_moves state.enemy in
   let len = Array.length move_list in
-  let index = Random.int_in_range ~min:0 ~max:len in
+  let index = Random.int len in
   move_list.(index)
 
 let player_moves (state : Level.t) (hand : Lib.Card.t Lib.Deck.t) input card
@@ -193,7 +194,6 @@ let run () =
     match
       game state hand deck renderer camel_texture bg_texture enemy_texture level
     with
-    | None -> print_endline "You lost"
     | None -> print_endline "You lost"
     | Some (updated_state, updated_hand, updated_deck, ended) ->
         if not ended then

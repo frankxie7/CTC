@@ -25,13 +25,13 @@ val create_move : string -> int -> int -> string -> m
     defense [def], and effect [eff]. *)
 
 val snake_moves : m array
-(** An array of moves for the snake enemy. *)
+(** A list of moves for the snake enemy. *)
 
 val bear_moves : m array
-(** An array of moves for the bear enemy. *)
+(** A list of moves for the bear enemy. *)
 
 val man_moves : m array
-(** An array of moves for the human enemy. *)
+(** A list of moves for the human enemy. *)
 
 val create_enemy : int -> m array -> t
 (** [create_enemy h m] creates an enemy with health [h] and a list of moves [m]. *)
@@ -63,5 +63,3 @@ val update_hp : t -> int -> unit
 val draw_enemy_base : renderer -> texture -> unit
 (** [draw_enemy_base r t] renders the enemy's base on the renderer [r] using the
     texture [t]. Raises an exception if rendering fails. *)
-
-val print_movelist : m list -> unit
