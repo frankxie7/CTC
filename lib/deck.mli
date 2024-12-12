@@ -31,10 +31,13 @@ val remove : int -> 'a t -> 'a t
 without the element. Raises Empty if n > [size d] + 1*)
 
 val shuffle : 'a t -> 'a t 
+(**[shuffle d] is a shuffled version of the deck.*)
 
 val draw : int -> 'a t -> 'a t -> 'a t * 'a t
+(**[draw n d h] draws that n cards from the deck into the hand *)
 
 val deck_to_string : Card.t list -> string list
+(**[deck_to_string d] is the string representation of d.*)
 
 val print : Card.t list -> unit
-  (**[print d] prints the deck representation for list.*)
+(**[print d] prints the deck representation for list.*)
