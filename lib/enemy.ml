@@ -20,7 +20,9 @@ let create_move (n : string) (dmg : int) (def : int) (eff : string) : m =
 
 (* let bear_moves = [ create_move "growl" 15 0 "None"; create_move "maul" 15 0
    "None" ] *)
-let snake_moves = [| create_move "bite" 7 0 "Bleed" |]
+let snake_moves =
+  [| create_move "bite" 7 0 "Bleed"; create_move "flick" 5 0 "None" |]
+
 let bear_moves = [| create_move "flick" 5 0 "None" |]
 let man_moves = [| create_move "mohan" 10 1 "None" |]
 (*create_move "chuck" 10 1 "None";*)

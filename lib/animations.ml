@@ -63,7 +63,7 @@ let idle = animate "idle" 1 1
 
 let snake_animation_table =
   [
-    (* ("flick", flick); *)
+    ("flick", flick);
     ("idle", idle);
     ("bite", bite);
     ("snake_damaged", snake_damaged);

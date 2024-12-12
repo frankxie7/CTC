@@ -80,8 +80,8 @@ let test_init_snake () =
   assert_equal 10 (Lib.Enemy.get_hp snake);
   assert_equal "idle" (Lib.Enemy.get_animation snake);
   let moves = Lib.Enemy.get_moves snake in
-  assert_equal 1 (List.length moves);
-  let move = List.hd moves in
+  assert_equal 2 (Array.length moves);
+  let move = moves.(0) in
   assert_equal "bite" (Lib.Enemy.get_name move);
   assert_equal 7 (Lib.Enemy.get_dmg move)
 
@@ -96,12 +96,12 @@ let test_update_animation () =
   assert_equal "attack" (Lib.Enemy.get_animation enemy)
 
 let test_create_enemy () =
-  let moves = [ Lib.Enemy.create_move "smash" 15 0 "Burn" ] in
+  let moves = [| Lib.Enemy.create_move "smash" 15 0 "Burn" |] in
   let enemy = Lib.Enemy.create_enemy 20 moves in
   assert_equal 20 (Lib.Enemy.get_hp enemy);
   assert_equal "idle" (Lib.Enemy.get_animation enemy);
-  assert_equal 1 (List.length (Lib.Enemy.get_moves enemy));
-  let move = List.hd (Lib.Enemy.get_moves enemy) in
+  assert_equal 1 (Array.length (Lib.Enemy.get_moves enemy));
+  let move = (Lib.Enemy.get_moves enemy).(0) in
   assert_equal "smash" (Lib.Enemy.get_name move);
   assert_equal 15 (Lib.Enemy.get_dmg move)
 
