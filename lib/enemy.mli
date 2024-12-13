@@ -25,13 +25,13 @@ val create_move : string -> int -> int -> string -> m
     defense [def], and effect [eff]. *)
 
 val snake_moves : m array
-(** A list of moves for the snake enemy. *)
+(** An array of moves for the snake enemy. *)
 
 val bear_moves : m array
-(** A list of moves for the bear enemy. *)
+(** An array of moves for the bear enemy. *)
 
 val man_moves : m array
-(** A list of moves for the human enemy. *)
+(** An array of moves for the human enemy. *)
 
 val create_enemy : int -> m array -> t
 (** [create_enemy h m] creates an enemy with health [h] and a list of moves [m]. *)
