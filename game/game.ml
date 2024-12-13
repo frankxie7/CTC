@@ -165,15 +165,16 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
       let max_energy = Camel.get_energy state.player - 3 in
       let max_defense = Camel.get_def state.player in
       let total_damage_taken = max 0 (enemy_attack.damage - max_defense) in
-      if total_damage_taken > 0 then
+      if total_damage_taken > 0 then (
         print_endline
           (Printf.sprintf "You took %d damage after defending %d!"
-             total_damage_taken max_defense)
+             total_damage_taken max_defense);
+        Camel.update_animation state.player "camel_damaged")
       else print_endline "Enemy's attack was blocked!";
       Camel.update_def state.player (0 - max_defense);
       Camel.update_energy state.player max_energy;
       Camel.update_hp state.player enemy_attack.damage;
-      Camel.update_animation state.player "camel_damaged";
+
       draw state renderer bg_texture camel_texture enemy_texture level;
 
       Some (state, updated_hand, updated_deck, false))
