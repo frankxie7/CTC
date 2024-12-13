@@ -49,6 +49,9 @@ val init_man : unit -> t
 val get_hp : t -> int
 (** [get_hp t] returns the current health points of the enemy [t]. *)
 
+val get_effect : m -> string
+(**[get_effect m] gets the effect of the given move*)
+
 val get_status : t -> (string * int) list
 (**[get_status t] returns all status effects on the enemy*)
 

@@ -18,6 +18,7 @@ type t = {
 
 let get_name m = m.name
 let get_dmg m = m.damage
+let get_effect m = m.effect
 
 let create_move (n : string) (dmg : int) (def : int) (eff : string) : m =
   { name = n; damage = dmg; defend = def; effect = eff }
@@ -30,10 +31,10 @@ let bear_moves =
 
 let man_moves =
   [|
-    create_move "mohan" 10 1 "None";
+    create_move "mohan" 30 1 "Bleed";
     create_move "chuck" 10 1 "None";
-    create_move "music" 10 1 "None";
-    create_move "cupid" 10 1 "None";
+    create_move "music" 15 1 "Stun";
+    create_move "cupid" 10 1 "Bleed";
   |]
 
 let create_enemy h m : t =
@@ -43,10 +44,10 @@ let init_snake () : t =
   { hp = 50; moves = snake_moves; status = []; animation = "idle" }
 
 let init_bear () : t =
-  { hp = 20; moves = bear_moves; status = []; animation = "idle" }
+  { hp = 70; moves = bear_moves; status = []; animation = "idle" }
 
 let init_man () : t =
-  { hp = 20; moves = man_moves; status = []; animation = "idle" }
+  { hp = 100; moves = man_moves; status = []; animation = "idle" }
 
 let get_hp t = t.hp
 let get_moves t = t.moves

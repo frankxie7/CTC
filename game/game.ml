@@ -10,16 +10,14 @@ let pos ch = if ch < 0 then 0 else ch
 let camel1A_deck =
   [
     Lib.Card.tackle;
-    Lib.Card.throw;
     Lib.Card.tackle;
+    Lib.Card.tackle;
+    Lib.Card.defend;
+    Lib.Card.defend;
     Lib.Card.defend;
     Lib.Card.spit;
-    Lib.Card.defend;
-    Lib.Card.tackle;
+    Lib.Card.spit;
     Lib.Card.stomp;
-    Lib.Card.tackle;
-    Lib.Card.defend;
-    Lib.Card.tackle;
   ]
 
 (** [draw_one] takes in a hand and deck, shuffles the deck, and appends the
@@ -29,7 +27,17 @@ let draw_one hand deck =
   let shuffled_deck = Lib.Deck.shuffle deck in
   if Lib.Deck.is_empty shuffled_deck then (
     print_endline "No more cards to draw!";
-    (hand, shuffled_deck))
+    if Lib.Deck.is_empty hand then (
+      print_endline "Hand is empty reshuffling and drawing 5";
+      let full_deck =
+        List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty
+      in
+      let shuffled_deck = Lib.Deck.shuffle full_deck in
+      let updated_hand, updated_deck =
+        Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty
+      in
+      (updated_hand, updated_deck))
+    else (hand, deck))
   else
     let new_hand = Lib.Deck.push (Lib.Deck.peek shuffled_deck) hand in
     (new_hand, Lib.Deck.pop shuffled_deck)
@@ -119,7 +127,11 @@ let player_moves (state : Level.t) (hand : Lib.Card.t Lib.Deck.t) input card
   let def = Lib.Card.get_defend card in
   let eff = Lib.Card.get_effect card in
   let cst = Lib.Card.get_cost card in
-  if cst <= Camel.get_energy state.player then (
+  let sts = Camel.get_status state.player in
+  if List.mem_assoc "Stun" sts then (
+    print_endline "You're stunned end your turn to get rid of the stun";
+    false)
+  else if cst <= Camel.get_energy state.player then (
     Camel.update_animation state.player (Lib.Card.get_name card);
     print_endline ("Playing animation: " ^ Camel.get_animation state.player);
 
@@ -134,7 +146,8 @@ let player_moves (state : Level.t) (hand : Lib.Card.t Lib.Deck.t) input card
       Enemy.update_hp state.enemy dmg;
       print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg));
 
-    print_endline ("Applying" ^ eff);
+    if eff = "Stun" || eff = "Weaken" || eff = "Bleed" then
+      print_endline (Printf.sprintf "You applied %s to the enemy" eff);
     Enemy.update_status state.enemy eff;
     Camel.update_energy state.player cst;
 
@@ -176,16 +189,21 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
       if List.mem_assoc "Bleed" state.enemy.status then (
         Enemy.update_hp state.enemy 5;
         print_endline "Enemy took five bleed damage");
+      if List.mem_assoc "Bleed" (Camel.get_status state.player) then (
+        Camel.update_hp state.player 10;
+        print_endline "You took 10 bleed damage");
       if List.mem_assoc "Stun" state.enemy.status then (
         let max_energy = Camel.get_energy state.player - 3 in
         let max_defense = Camel.get_def state.player in
         Camel.update_def state.player (0 - max_defense);
         Camel.update_energy state.player max_energy;
         Enemy.degrade_status state.enemy;
+        Camel.degrade_status state.player;
         Some (state, updated_hand, updated_deck, false))
       else
         let enemy_attack = enemy_moves state in
         Enemy.update_animation state.enemy (Enemy.get_name enemy_attack);
+        let effect = Enemy.get_effect enemy_attack in
         let max_energy = Camel.get_energy state.player - 3 in
         let max_defense = Camel.get_def state.player in
         let total_damage_taken = max 0 (enemy_attack.damage - max_defense) in
@@ -195,12 +213,16 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
                total_damage_taken max_defense);
           Camel.update_animation state.player "camel_damaged")
         else print_endline "Enemy's attack was blocked!";
+        if effect = "Stun" || effect = "Bleed" then
+          print_endline (Printf.sprintf "The enemy applied %s to you" effect);
+        Camel.update_status state.player effect;
         Camel.update_def state.player (0 - max_defense);
         Camel.update_energy state.player max_energy;
         Camel.update_hp state.player enemy_attack.damage;
 
         draw state renderer bg_texture camel_texture enemy_texture level;
         Enemy.degrade_status state.enemy;
+        Camel.degrade_status state.player;
         Some (state, updated_hand, updated_deck, false))
     else
       try
@@ -214,6 +236,7 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
         Some (state, hand, deck, false))
 
 let run () =
+  Random.self_init ();
   try
     let rec main_loop (state : Level.t) hand deck renderer bg_texture
         camel_texture enemy_texture level =
@@ -240,6 +263,13 @@ let run () =
             let state =
               Level.init_player (Camel.init_camel ()) (Enemy.init_bear ())
             in
+            let full_deck =
+              List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty
+            in
+            let shuffled_deck = Lib.Deck.shuffle full_deck in
+            let updated_hand, updated_deck =
+              Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty
+            in
             main_loop state updated_hand updated_deck renderer bg_texture
               camel_texture enemy_texture level)
           else if level = 3 then (
@@ -252,6 +282,13 @@ let run () =
             Level.draw_camel_base renderer camel_texture;
             let state =
               Level.init_player (Camel.init_camel ()) (Enemy.init_man ())
+            in
+            let full_deck =
+              List.fold_right Lib.Deck.push camel1A_deck Lib.Deck.empty
+            in
+            let shuffled_deck = Lib.Deck.shuffle full_deck in
+            let updated_hand, updated_deck =
+              Lib.Deck.draw 5 shuffled_deck Lib.Deck.empty
             in
             main_loop state updated_hand updated_deck renderer bg_texture
               camel_texture enemy_texture level);
