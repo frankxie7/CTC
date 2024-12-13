@@ -164,10 +164,10 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     enemy_texture level =
   if Enemy.get_hp state.enemy <= 0 then
     if level = 3 then (
-      print_endline "You beat the final boss";
+      print_endline "You beat the final boss!";
       Some (state, hand, deck, true))
     else (
-      print_endline "You beat the enemy";
+      print_endline "You beat the enemy!";
       Some (state, hand, deck, true))
   else if Camel.get_hp state.player <= 0 then (
     print_endline "You have been defeated! Game Over.";
