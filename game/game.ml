@@ -133,6 +133,7 @@ let player_moves (state : Level.t) (hand : Lib.Card.t Lib.Deck.t) input card
     false)
   else if cst <= Camel.get_energy state.player then (
     Camel.update_animation state.player (Lib.Card.get_name card);
+    print_endline ("Playing animation: " ^ Camel.get_animation state.player);
 
     Camel.update_def state.player def;
     let enemy_status = Enemy.get_status state.enemy in
