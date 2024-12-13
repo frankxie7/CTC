@@ -95,13 +95,16 @@ let init (enemy_asset : string) =
       in
       (renderer, (background_texture, camel_texture, enemy_texture))
 
-let draw state renderer bg_texture camel_texture snake_texture level =
+let draw state renderer bg_texture camel_texture enemy_texture level =
   Sdl.render_clear renderer |> ignore;
   Level.draw_background renderer bg_texture;
   Level.draw_camel_animation state renderer bg_texture camel_texture
-    snake_texture;
+    enemy_texture;
   Level.draw_enemy_animation state renderer bg_texture camel_texture
-    snake_texture level;
+    enemy_texture level;
+  Sdl.render_present renderer;
+  Level.draw_camel_base renderer camel_texture;
+  Level.draw_enemy_base renderer enemy_texture;
   Sdl.render_present renderer
 
 let enemy_moves (state : Level.t) =
@@ -111,7 +114,7 @@ let enemy_moves (state : Level.t) =
   move_list.(index)
 
 let player_moves (state : Level.t) (hand : Lib.Card.t Lib.Deck.t) input card
-    index =
+    index level =
   let dmg = Lib.Card.get_dmg card in
   let def = Lib.Card.get_defend card in
   let cst = Lib.Card.get_cost card in
@@ -124,7 +127,10 @@ let player_moves (state : Level.t) (hand : Lib.Card.t Lib.Deck.t) input card
     Camel.update_energy state.player cst;
 
     print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg);
-    (*Enemy.update_animation state.enemy "snake_damaged";*)
+    if level = 1 then Enemy.update_animation state.enemy "snake_damaged"
+    else if level = 2 then Enemy.update_animation state.enemy "bear_damaged"
+    else if level = 3 then Enemy.update_animation state.enemy "human_damaged"
+    else failwith "Error with drawing damaged animations";
     true)
   else
     let _ = print_endline "You don't have enough energy to play that card!!!" in
@@ -182,7 +188,7 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
       try
         let index = check_conditions input hand in
         let card, updated_hand = play_card hand index in
-        if player_moves state hand input card index then
+        if player_moves state hand input card index level then
           Some (state, updated_hand, deck, false)
         else Some (state, hand, deck, false)
       with Failure msg ->
@@ -207,12 +213,12 @@ let run () =
           let level = level + 1 in
           if level = 2 then (
             let enemy_texture =
-              match Image.load_texture renderer "assets/snake.png" with
+              match Image.load_texture renderer "assets/bear.png" with
               | Ok texture -> texture
               | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
             in
-            Enemy.draw_enemy_base renderer enemy_texture;
-            Camel.draw_camel_base renderer camel_texture;
+            Level.draw_enemy_base renderer enemy_texture;
+            Level.draw_camel_base renderer camel_texture;
             let state =
               Level.init_player (Camel.init_camel ()) (Enemy.init_bear ())
             in
@@ -224,8 +230,8 @@ let run () =
               | Ok texture -> texture
               | Error (`Msg e) -> failwith ("Unable to load enemy texture: " ^ e)
             in
-            Enemy.draw_enemy_base renderer enemy_texture;
-            Camel.draw_camel_base renderer camel_texture;
+            Level.draw_enemy_base renderer enemy_texture;
+            Level.draw_camel_base renderer camel_texture;
             let state =
               Level.init_player (Camel.init_camel ()) (Enemy.init_man ())
             in

@@ -24,16 +24,3 @@ let get_hp t = t.hp
 let get_energy t = t.energy
 let get_status t = t.status
 let get_animation t = t.animation
-
-let draw_camel_base r t =
-  let src_rect =
-    Rect.create ~x:(init_width + frame_width) ~y:init_height ~w:frame_width
-      ~h:frame_height
-  in
-  let dst_rect =
-    Rect.create ~x:camel_x ~y:camel_y ~w:frame_width_scaling
-      ~h:frame_height_scaling
-  in
-  match render_copy ~src:src_rect ~dst:dst_rect r t with
-  | Ok () -> ()
-  | Error (`Msg e) -> failwith ("Failed to draw base camel: " ^ e)

@@ -59,9 +59,3 @@ val update_animation : t -> string -> unit
 
 val update_hp : t -> int -> unit
 (** [update_hp t x] reduces the health points of the enemy [t] by [x]. *)
-
-val draw_enemy_base : renderer -> texture -> unit
-(** [draw_enemy_base r t] renders the enemy's base on the renderer [r] using the
-    texture [t]. Raises an exception if rendering fails. *)
-
-val print_movelist : m list -> unit
