@@ -1,8 +1,6 @@
 open Tsdl
 open Tsdl_image
-open Camel
-open Enemy
-open Animations
+open Lib
 open Const
 
 let init_y = 7
