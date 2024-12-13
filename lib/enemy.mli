@@ -11,6 +11,7 @@ type m = {
 type t = {
   mutable hp : int;
   moves : m array;
+  mutable status : (string * int) list;
   mutable animation : string;
 }
 
@@ -48,6 +49,9 @@ val init_man : unit -> t
 val get_hp : t -> int
 (** [get_hp t] returns the current health points of the enemy [t]. *)
 
+val get_status : t -> (string * int) list
+(**[get_status t] returns all status effects on the enemy*)
+
 val get_moves : t -> m array
 (** [get_moves t] returns the list of moves of the enemy [t]. *)
 
@@ -59,3 +63,11 @@ val update_animation : t -> string -> unit
 
 val update_hp : t -> int -> unit
 (** [update_hp t x] reduces the health points of the enemy [t] by [x]. *)
+
+val degrade_status : t -> unit
+(**[degrade_status t] degrades the status effects the enemy currently suffers
+   from*)
+
+val update_status : t -> string -> unit
+(**[update_status t s] updates the status conditions currently afflicting the
+   enemy*)

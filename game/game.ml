@@ -117,16 +117,27 @@ let player_moves (state : Level.t) (hand : Lib.Card.t Lib.Deck.t) input card
     index level =
   let dmg = Lib.Card.get_dmg card in
   let def = Lib.Card.get_defend card in
+  let eff = Lib.Card.get_effect card in
   let cst = Lib.Card.get_cost card in
   if cst <= Camel.get_energy state.player then (
     Camel.update_animation state.player (Lib.Card.get_name card);
     print_endline ("Playing animation: " ^ Camel.get_animation state.player);
 
     Camel.update_def state.player def;
-    Enemy.update_hp state.enemy dmg;
+    let enemy_status = Enemy.get_status state.enemy in
+
+    if List.mem_assoc "Weaken" enemy_status then (
+      Enemy.update_hp state.enemy (dmg * 2);
+      print_endline
+        (Printf.sprintf "You dealt %d damage to the enemy!" (dmg * 2)))
+    else (
+      Enemy.update_hp state.enemy dmg;
+      print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg));
+
+    print_endline ("Applying" ^ eff);
+    Enemy.update_status state.enemy eff;
     Camel.update_energy state.player cst;
 
-    print_endline (Printf.sprintf "You dealt %d damage to the enemy!" dmg);
     if level = 1 then Enemy.update_animation state.enemy "snake_damaged"
     else if level = 2 then Enemy.update_animation state.enemy "bear_damaged"
     else if level = 3 then Enemy.update_animation state.enemy "human_damaged"
@@ -162,28 +173,35 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     else if input = "End" then (
       let updated_hand, updated_deck = draw_one hand deck in
       print_endline "You drew a card!";
-      let enemy_attack = enemy_moves state in
-      Enemy.update_animation state.enemy (Enemy.get_name enemy_attack);
-      print_endline
-        (Printf.sprintf "Enemy attacks with %s! You take %d damage!"
-           (Enemy.get_name enemy_attack)
-           enemy_attack.damage);
-      let max_energy = Camel.get_energy state.player - 3 in
-      let max_defense = Camel.get_def state.player in
-      let total_damage_taken = max 0 (enemy_attack.damage - max_defense) in
-      if total_damage_taken > 0 then (
-        print_endline
-          (Printf.sprintf "You took %d damage after defending %d!"
-             total_damage_taken max_defense);
-        Camel.update_animation state.player "camel_damaged")
-      else print_endline "Enemy's attack was blocked!";
-      Camel.update_def state.player (0 - max_defense);
-      Camel.update_energy state.player max_energy;
-      Camel.update_hp state.player enemy_attack.damage;
+      if List.mem_assoc "Bleed" state.enemy.status then (
+        Enemy.update_hp state.enemy 5;
+        print_endline "Enemy took five bleed damage");
+      if List.mem_assoc "Stun" state.enemy.status then (
+        let max_energy = Camel.get_energy state.player - 3 in
+        let max_defense = Camel.get_def state.player in
+        Camel.update_def state.player (0 - max_defense);
+        Camel.update_energy state.player max_energy;
+        Enemy.degrade_status state.enemy;
+        Some (state, updated_hand, updated_deck, false))
+      else
+        let enemy_attack = enemy_moves state in
+        Enemy.update_animation state.enemy (Enemy.get_name enemy_attack);
+        let max_energy = Camel.get_energy state.player - 3 in
+        let max_defense = Camel.get_def state.player in
+        let total_damage_taken = max 0 (enemy_attack.damage - max_defense) in
+        if total_damage_taken > 0 then (
+          print_endline
+            (Printf.sprintf "You took %d damage after defending %d!"
+               total_damage_taken max_defense);
+          Camel.update_animation state.player "camel_damaged")
+        else print_endline "Enemy's attack was blocked!";
+        Camel.update_def state.player (0 - max_defense);
+        Camel.update_energy state.player max_energy;
+        Camel.update_hp state.player enemy_attack.damage;
 
-      draw state renderer bg_texture camel_texture enemy_texture level;
-
-      Some (state, updated_hand, updated_deck, false))
+        draw state renderer bg_texture camel_texture enemy_texture level;
+        Enemy.degrade_status state.enemy;
+        Some (state, updated_hand, updated_deck, false))
     else
       try
         let index = check_conditions input hand in
