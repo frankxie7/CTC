@@ -67,11 +67,21 @@ let init_energy_bar (t : players) r : unit =
     Tsdl.Sdl.render_fill_rect r (Some energy_bar) |> ignore
   done
 
-let init_bar (t : players) r : unit =
-  init_hp_bar (camel_x + 20) (camel_y - 25) (Camel.get_hp t.player) camel_max_hp
-    r;
-  init_hp_bar (enemy_hp_x + 15) (enemy_hp_y - 15) (Enemy.get_hp t.enemy)
-    enemy_max_hp r;
+let init_bar (t : players) r (level : int) : unit =
+  let enemy_hp =
+    if level = 1 then snake_max_hp
+    else if level = 2 then bear_max_hp
+    else if level = 3 then human_max_hp
+    else failwith "Invalid level"
+  in
+  let camel_hp =
+    if Camel.get_hp t.player < 0 then 0 else Camel.get_hp t.player
+  in
+  let enemy_curr_hp =
+    if Enemy.get_hp t.enemy < 0 then 0 else Enemy.get_hp t.enemy
+  in
+  init_hp_bar (camel_x + 20) (camel_y - 25) camel_hp camel_max_hp r;
+  init_hp_bar (enemy_hp_x + 15) (enemy_hp_y - 15) enemy_curr_hp enemy_hp r;
   init_energy_bar t r
 
 let draw_background r bg_texture =
@@ -137,7 +147,7 @@ let draw_enemy_animation state renderer bg_texture camel_texture enemy_texture
     in
     Sdl.render_copy ~src:src_rect ~dst:dst_rect renderer enemy_texture
     |> Result.get_ok;
-    init_bar state renderer;
+    init_bar state renderer level;
     Sdl.render_present renderer;
     let x = Sdl.wait_event_timeout None 500 in
     if x then () else ();
@@ -145,7 +155,8 @@ let draw_enemy_animation state renderer bg_texture camel_texture enemy_texture
   done;
   Enemy.update_animation state.enemy "idle"
 
-let draw_camel_animation state renderer bg_texture camel_texture enemy_texture =
+let draw_camel_animation state renderer bg_texture camel_texture enemy_texture
+    level =
   let anim_name = Camel.get_animation state.player in
   let total_frames =
     Animations.get_frame_num Animations.camel_animation_table anim_name
@@ -166,7 +177,7 @@ let draw_camel_animation state renderer bg_texture camel_texture enemy_texture =
     in
     Sdl.render_copy ~src:src_rect ~dst:dst_rect renderer camel_texture
     |> Result.get_ok;
-    init_bar state renderer;
+    init_bar state renderer level;
 
     Sdl.render_present renderer;
     let x = Sdl.wait_event_timeout None 500 in

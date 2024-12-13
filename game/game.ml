@@ -107,7 +107,7 @@ let draw state renderer bg_texture camel_texture enemy_texture level =
   Sdl.render_clear renderer |> ignore;
   Level.draw_background renderer bg_texture;
   Level.draw_camel_animation state renderer bg_texture camel_texture
-    enemy_texture;
+    enemy_texture level;
   Level.draw_enemy_animation state renderer bg_texture camel_texture
     enemy_texture level;
   Sdl.render_present renderer;
