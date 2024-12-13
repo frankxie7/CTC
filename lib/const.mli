@@ -32,9 +32,11 @@ val init_height : int
 val camel_max_hp : int
 (* camel's max health *)
 
-val enemy_max_hp : int
-(* enemy's max health *)
+val snake_max_hp : int
 
+(* enemy's max health *)
+val bear_max_hp : int
+val human_max_hp : int
 val enemy_hp_x : int
 (* enemy x location *)
 

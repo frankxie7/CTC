@@ -15,11 +15,11 @@ val draw_background :
                                  unit
 
 val draw_camel_animation :
-  t -> Sdl.renderer -> Sdl.texture -> Sdl.texture -> Sdl.texture -> unit
+  t -> Sdl.renderer -> Sdl.texture -> Sdl.texture -> Sdl.texture -> int -> unit
 
 val draw_enemy_animation :
   t -> Sdl.renderer -> Sdl.texture -> Sdl.texture -> Sdl.texture -> int -> unit
 
-val init_bar : t -> Sdl.renderer -> unit
+val init_bar : t -> Sdl.renderer -> int -> unit
 val draw_enemy_base : Sdl.renderer -> Sdl.texture -> unit
 val draw_camel_base : Sdl.renderer -> Sdl.texture -> unit
