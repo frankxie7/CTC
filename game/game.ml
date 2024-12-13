@@ -174,6 +174,7 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
     print_endline "You have been defeated! Game Over.";
     None)
   else (
+    print_endline "";
     Lib.Deck.print (Lib.Deck.to_list hand);
     print_endline
       "Play a card (type index) or type 'End' to end turn: \n\
@@ -184,6 +185,7 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
       print_endline "You have chosen to quit the game. Goodbye!";
       None)
     else if input = "End" then (
+      print_endline "";
       let updated_hand, updated_deck = draw_one hand deck in
       print_endline "You drew a card!";
       if List.mem_assoc "Bleed" state.enemy.status then (
@@ -235,9 +237,30 @@ let rec game (state : Level.t) (hand : Lib.Card.t Lib.Deck.t)
         print_endline msg;
         Some (state, hand, deck, false))
 
+let print_intro () =
+  print_endline "🔥 Welcome to Camel Caravan! ⚔️🐪⚔️ 🔥";
+  print_endline "";
+  print_endline "Here are the rules:";
+  print_endline "1. The goal is to choose cards to play and attack the enemy.";
+  print_endline
+    "2. Each card has a cost, damage or defense, and possibly a special effect!";
+  print_endline "3. You can draw new cards by ending your turn.";
+  print_endline
+    "4. Your goal is to defeat the enemy while managing your energy and health.";
+  print_endline "5. Effects Descriptions:";
+  print_endline "Stun: You are unable to act; Lasts 1 turn.";
+  print_endline "Bleed: You take damage over time; Lasts 3 turns.";
+  print_endline "Weaken: You take more damage from attacks; Lasts 3 turns.";
+  print_endline "";
+  print_endline "Press Enter to start the game...";
+
+  let _ = read_line () in
+  ()
+
 let run () =
   Random.self_init ();
   try
+    print_intro ();
     let rec main_loop (state : Level.t) hand deck renderer bg_texture
         camel_texture enemy_texture level =
       draw state renderer bg_texture camel_texture enemy_texture level;
