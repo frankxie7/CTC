@@ -1,7 +1,6 @@
 open Tsdl.Sdl
 open Deck
 open Card
-open Const
 
 type t = {
   mutable hp : int;

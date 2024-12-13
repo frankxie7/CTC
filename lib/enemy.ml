@@ -1,6 +1,5 @@
 open Tsdl.Sdl
 open Tsdl_image
-open Const
 
 type m = {
   name : string;

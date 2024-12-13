@@ -2,7 +2,6 @@ open Tsdl
 open Tsdl_image
 open Camel
 open Enemy
-open Const
 
 type t = {
   name : string;
