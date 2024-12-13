@@ -133,7 +133,6 @@ let player_moves (state : Level.t) (hand : Lib.Card.t Lib.Deck.t) input card
     false)
   else if cst <= Camel.get_energy state.player then (
     Camel.update_animation state.player (Lib.Card.get_name card);
-    print_endline ("Playing animation: " ^ Camel.get_animation state.player);
 
     Camel.update_def state.player def;
     let enemy_status = Enemy.get_status state.enemy in
@@ -150,11 +149,11 @@ let player_moves (state : Level.t) (hand : Lib.Card.t Lib.Deck.t) input card
       print_endline (Printf.sprintf "You applied %s to the enemy" eff);
     Enemy.update_status state.enemy eff;
     Camel.update_energy state.player cst;
-
-    if level = 1 then Enemy.update_animation state.enemy "snake_damaged"
-    else if level = 2 then Enemy.update_animation state.enemy "bear_damaged"
-    else if level = 3 then Enemy.update_animation state.enemy "human_damaged"
-    else failwith "Error with drawing damaged animations";
+    if dmg <> 0 then
+      if level = 1 then Enemy.update_animation state.enemy "snake_damaged"
+      else if level = 2 then Enemy.update_animation state.enemy "bear_damaged"
+      else if level = 3 then Enemy.update_animation state.enemy "human_damaged"
+      else failwith "Error with drawing damaged animations";
     true)
   else
     let _ = print_endline "You don't have enough energy to play that card!!!" in

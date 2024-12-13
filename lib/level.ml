@@ -118,15 +118,9 @@ let draw_enemy_animation state renderer bg_texture camel_texture enemy_texture
     level =
   let animation_table =
     match level with
-    | 1 ->
-        print_string "Snake animation table chosen.\n";
-        Animations.snake_animation_table
-    | 2 ->
-        print_string "Bear animation table chosen.\n";
-        Animations.bear_animation_table
-    | 3 ->
-        print_string "Human animation table chosen.\n";
-        Animations.human_animation_table
+    | 1 -> Animations.snake_animation_table
+    | 2 -> Animations.bear_animation_table
+    | 3 -> Animations.human_animation_table
     | _ -> failwith "Animation table error"
   in
   let anim_name = Enemy.get_animation state.enemy in
