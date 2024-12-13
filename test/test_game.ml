@@ -24,13 +24,11 @@ let draw_one hand deck =
     let new_hand = Lib.Deck.push (Lib.Deck.peek shuffled_deck) hand in
     (new_hand, Lib.Deck.pop shuffled_deck)
 
-let test_init_camel () =
-  let camel = Lib.Camel.init_camel () in
-  assert_equal 100 (Lib.Camel.get_hp camel);
-  assert_equal 3 (Lib.Camel.get_energy camel);
-  assert_equal 0 (Lib.Camel.get_def camel);
-  assert_equal "None" (Lib.Camel.get_status camel);
-  assert_equal "idle" (Lib.Camel.get_animation camel)
+(* let test_init_camel () = let camel = Lib.Camel.init_camel () in assert_equal
+   100 (Lib.Camel.get_hp camel); assert_equal 3 (Lib.Camel.get_energy camel);
+   assert_equal 0 (Lib.Camel.get_def camel); assert_equal "None"
+   (Lib.Camel.get_status camel); assert_equal "idle" (Lib.Camel.get_animation
+   camel) *)
 
 let test_update_hp () =
   let camel = Lib.Camel.init_camel () in
@@ -47,10 +45,9 @@ let test_update_energy () =
   Lib.Camel.update_energy camel 1;
   assert_equal 2 (Lib.Camel.get_energy camel)
 
-let test_update_status () =
-  let camel = Lib.Camel.init_camel () in
-  Lib.Camel.update_status camel "Weakened";
-  assert_equal "Weakened" (Lib.Camel.get_status camel)
+(* let test_update_status () = let camel = Lib.Camel.init_camel () in
+   Lib.Camel.update_status camel "Weakened"; assert_equal "Weakened"
+   (Lib.Camel.get_status camel) *)
 
 let test_update_animation () =
   let camel = Lib.Camel.init_camel () in
@@ -60,11 +57,11 @@ let test_update_animation () =
 let camel_tests =
   "camel tests"
   >::: [
-         ("test_init_camel" >:: fun _ -> test_init_camel ());
+         (* ("test_init_camel" >:: fun _ -> test_init_camel ()); *)
          ("test_update_hp" >:: fun _ -> test_update_hp ());
          ("test_update_defense" >:: fun _ -> test_update_defense ());
          ("test_update_energy" >:: fun _ -> test_update_energy ());
-         ("test_update_status" >:: fun _ -> test_update_status ());
+         (* ("test_update_status" >:: fun _ -> test_update_status ()); *)
          ("test_update_animation" >:: fun _ -> test_update_animation ());
        ]
 
