@@ -18,7 +18,7 @@ title: "Conquer the Caravan"
 # OK if this is a Cornell Github link, but public gallery viewers won't be able to see it.
 git-repo: "https://github.coecis.cornell.edu/hz639/3110_final_project"
 # Replace the URL with your own demo video.
-demo-video-url: "https://youtu.be/mHJhsWRKO88"
+demo-video-url: "https://youtu.be/Jytgnyj_eLY"
 # Write a short, attention-grabbing description of your project.
 desc: >
   Our project is a dungeon climber game. It uses randomized cards to allow
